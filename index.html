@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Mesa de mando — La prisión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #08080a;
+    --stone: #1c1c21;
+    --stone-2: #222227;
+    --stone-3: #2a2a30;
+    --border: #35353c;
+    --ink: #e0e0e6;
+    --ink-dim: #8b8c95;
+    --torch: #a8c9e8;
+    --torch-dim: #43597a;
+    --blood: #6b2028;
+    --moss: #55707a;
+    --content-max: 65rem;
+  }
+  html{ font-size: 16px; }
+  @media (max-width: 480px){ html{ font-size: 15px; } }
+  @media (min-width: 481px) and (max-width: 768px){ html{ font-size: 15.5px; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:'Crimson Pro', Georgia, serif; overflow-x: hidden; width: 100%; }
+  body{
+    padding: clamp(1rem, 3vw, 2.5rem) 0 4rem;
+    position: relative;
+    background-image:
+      radial-gradient(ellipse 900px 520px at 50% -8%, rgba(67,89,122,.36), transparent 60%),
+      radial-gradient(ellipse 900px 650px at 50% 115%, rgba(0,0,0,.6), transparent 60%),
+      radial-gradient(ellipse 700px 700px at 8% 40%, rgba(85,112,122,.07), transparent 55%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 3px);
+    background-color: var(--bg);
+  }
+  ::-webkit-scrollbar{ width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track{ background: var(--bg); }
+  ::-webkit-scrollbar-thumb{ background: var(--stone-3); border-radius: 5px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover{ background: var(--torch-dim); }
+
+  .embers{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .embers span{
+    position:absolute; bottom:-10px; width:3px; height:3px; border-radius:50%;
+    background: var(--torch); box-shadow: 0 0 6px 1px rgba(168,201,232,.8);
+    opacity:0; animation: emberRise 12s linear infinite;
+  }
+  .embers span:nth-child(1){ left:6%;  animation-delay:0s;   animation-duration:13s; }
+  .embers span:nth-child(2){ left:19%; animation-delay:4s;   animation-duration:10s; }
+  .embers span:nth-child(3){ left:38%; animation-delay:1.5s; animation-duration:14s; }
+  .embers span:nth-child(4){ left:55%; animation-delay:7s;   animation-duration:11s; }
+  .embers span:nth-child(5){ left:72%; animation-delay:2.5s; animation-duration:15s; }
+  .embers span:nth-child(6){ left:88%; animation-delay:5.5s; animation-duration:12s; }
+  @keyframes emberRise{
+    0%{ transform: translateY(0) translateX(0); opacity:0; }
+    8%{ opacity:.85; }
+    92%{ opacity:.3; }
+    100%{ transform: translateY(-620px) translateX(18px); opacity:0; }
+  }
+
+  .wrap{
+    max-width: var(--content-max);
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 480px){
+    .wrap{ max-width: 100%; padding: 0 1rem; }
+  }
+  @media (min-width: 481px) and (max-width: 768px){
+    .wrap{ max-width: 90%; padding: 0 1.25rem; }
+  }
+  @media (min-width: 769px){
+    .wrap{ max-width: var(--content-max); }
+  }
+
+  /* --- luna menguante de la cabecera --- */
+  .title-row{ display:flex; align-items:center; gap: 1rem; }
+  .moon{
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgba(168,201,232,.55)) drop-shadow(0 0 22px rgba(168,201,232,.25));
+  }
+
+  header{ margin-bottom: 2.25rem; padding-bottom: 1.6rem; position: relative; }
+  header::after{
+    content:""; display:block; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background: linear-gradient(90deg, transparent, var(--torch-dim), transparent);
+  }
+  header::before{
+    content:""; position:absolute; top:-14px; right:-10px; width:84px; height:84px;
+    background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2290%22%20height%3D%2290%22%20viewBox%3D%220%200%2090%2090%22%3E%0A%3Cpath%20d%3D%22M6%2C86%20C18%2C64%208%2C48%2022%2C34%20C33%2C23%2030%2C42%2044%2C30%20C54%2C22%2048%2C10%2062%2C8%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%222.4%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M22%2C34%20C15%2C26%2020%2C16%2030%2C18%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M44%2C30%20C48%2C40%2040%2C46%2032%2C42%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M62%2C8%20C68%2C14%2064%2C22%2055%2C20%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cellipse%20cx%3D%2212%22%20cy%3D%2256%22%20rx%3D%225%22%20ry%3D%229%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.92%22%20transform%3D%22rotate%2832%2012%2056%29%22/%3E%0A%3Cellipse%20cx%3D%2226%22%20cy%3D%2218%22%20rx%3D%224.2%22%20ry%3D%227.5%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-20%2026%2018%29%22/%3E%0A%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%224.6%22%20ry%3D%228%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2860%2034%2044%29%22/%3E%0A%3Cellipse%20cx%3D%2253%22%20cy%3D%2221%22%20rx%3D%223.8%22%20ry%3D%227%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-35%2053%2021%29%22/%3E%0A%3Cellipse%20cx%3D%2263%22%20cy%3D%229%22%20rx%3D%223.6%22%20ry%3D%226.6%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2815%2063%209%29%22/%3E%0A%3Cellipse%20cx%3D%2256%22%20cy%3D%2219%22%20rx%3D%223%22%20ry%3D%225.4%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.85%22%20transform%3D%22rotate%2870%2056%2019%29%22/%3E%0A%3Ccircle%20cx%3D%2218%22%20cy%3D%2244%22%20r%3D%222.4%22%20fill%3D%22%238a3230%22%20opacity%3D%220.75%22/%3E%0A%3Ccircle%20cx%3D%2240%22%20cy%3D%2236%22%20r%3D%222%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3Ccircle%20cx%3D%2258%22%20cy%3D%2214%22%20r%3D%222.1%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3C/svg%3E") no-repeat center / contain;
+    opacity:.62; transform: scaleX(-1) rotate(8deg); pointer-events:none;
+  }
+  header h1{
+    font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-weight:600; letter-spacing:.03em;
+    font-size: 1.9rem; margin: 0; text-shadow: 0 0 22px rgba(168,201,232,.22);
+  }
+  header p{ margin: .6rem 0 0; color: var(--ink-dim); font-size: 0.9rem; letter-spacing: .02em; }
+
+  nav.tabs{ display:flex; gap:28px; margin: 32px 0 36px; flex-wrap:wrap; border-bottom: 1px solid var(--border); }
+  nav.tabs button{
+    font-family:'Space Grotesk', sans-serif; font-size: 13px; letter-spacing: .03em;
+    background: none; color: var(--ink-dim);
+    border: none; border-bottom: 2px solid transparent;
+    padding: 0 2px 14px; cursor:pointer; transition: border-color .15s ease, color .15s ease;
+  }
+  nav.tabs button:hover{ color: var(--ink); }
+  nav.tabs button.active{
+    color: var(--ink); border-bottom-color: var(--torch);
+    text-shadow: 0 0 10px rgba(168,201,232,.55);
+  }
+
+  section.panel{ display:none; }
+  section.panel.active{ display:block; }
+
+  .card{ background: linear-gradient(180deg, var(--stone), #16171a); border:1px solid var(--border); border-radius:6px;
+    padding: 34px 32px; margin-bottom: 24px; position:relative; overflow:hidden;
+    box-shadow: 0 10px 26px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.02); }
+  .card::before{ content:""; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, transparent, var(--torch), transparent); opacity:.85; }
+  .card.town::before{ background: linear-gradient(90deg, transparent, var(--moss), transparent); }
+  .card.town{ position: relative; overflow: visible; }
+  .card.town::after{
+    content:""; position:absolute; bottom:-6px; left:-8px; width:64px; height:64px;
+    background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2290%22%20height%3D%2290%22%20viewBox%3D%220%200%2090%2090%22%3E%0A%3Cpath%20d%3D%22M6%2C86%20C18%2C64%208%2C48%2022%2C34%20C33%2C23%2030%2C42%2044%2C30%20C54%2C22%2048%2C10%2062%2C8%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%222.4%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M22%2C34%20C15%2C26%2020%2C16%2030%2C18%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M44%2C30%20C48%2C40%2040%2C46%2032%2C42%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M62%2C8%20C68%2C14%2064%2C22%2055%2C20%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cellipse%20cx%3D%2212%22%20cy%3D%2256%22%20rx%3D%225%22%20ry%3D%229%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.92%22%20transform%3D%22rotate%2832%2012%2056%29%22/%3E%0A%3Cellipse%20cx%3D%2226%22%20cy%3D%2218%22%20rx%3D%224.2%22%20ry%3D%227.5%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-20%2026%2018%29%22/%3E%0A%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%224.6%22%20ry%3D%228%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2860%2034%2044%29%22/%3E%0A%3Cellipse%20cx%3D%2253%22%20cy%3D%2221%22%20rx%3D%223.8%22%20ry%3D%227%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-35%2053%2021%29%22/%3E%0A%3Cellipse%20cx%3D%2263%22%20cy%3D%229%22%20rx%3D%223.6%22%20ry%3D%226.6%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2815%2063%209%29%22/%3E%0A%3Cellipse%20cx%3D%2256%22%20cy%3D%2219%22%20rx%3D%223%22%20ry%3D%225.4%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.85%22%20transform%3D%22rotate%2870%2056%2019%29%22/%3E%0A%3Ccircle%20cx%3D%2218%22%20cy%3D%2244%22%20r%3D%222.4%22%20fill%3D%22%238a3230%22%20opacity%3D%220.75%22/%3E%0A%3Ccircle%20cx%3D%2240%22%20cy%3D%2236%22%20r%3D%222%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3Ccircle%20cx%3D%2258%22%20cy%3D%2214%22%20r%3D%222.1%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3C/svg%3E") no-repeat center / contain;
+    opacity:.45; transform: rotate(150deg) scaleX(-1); pointer-events:none;
+  }
+  .card.log::before{ background: linear-gradient(90deg, transparent, var(--ink-dim), transparent); }
+
+  .eyebrow{ font-family:'Space Grotesk', sans-serif; font-size:11px; letter-spacing:.06em;
+    color: var(--ink-dim); margin: 0 0 12px; }
+  h2{ font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-weight:600; letter-spacing:.015em;
+    font-size: 1.4rem; line-height:1.4; margin: 0 0 1.1rem; }
+  p.body-text{ font-size:1.06rem; line-height:1.85; margin:0 0 1.4rem; }
+
+  #storyCard{
+    border-color: var(--torch-dim);
+    box-shadow: 0 0 0 4px rgba(0,0,0,.22) inset, 0 14px 34px rgba(0,0,0,.5);
+  }
+  #storyCard::after{
+    content:""; position:absolute; bottom:2px; right:0px; width:76px; height:76px;
+    background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2290%22%20height%3D%2290%22%20viewBox%3D%220%200%2090%2090%22%3E%0A%3Cpath%20d%3D%22M6%2C86%20C18%2C64%208%2C48%2022%2C34%20C33%2C23%2030%2C42%2044%2C30%20C54%2C22%2048%2C10%2062%2C8%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%222.4%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M22%2C34%20C15%2C26%2020%2C16%2030%2C18%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M44%2C30%20C48%2C40%2040%2C46%2032%2C42%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cpath%20d%3D%22M62%2C8%20C68%2C14%2064%2C22%2055%2C20%22%20stroke%3D%22%235f6f47%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%0A%3Cellipse%20cx%3D%2212%22%20cy%3D%2256%22%20rx%3D%225%22%20ry%3D%229%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.92%22%20transform%3D%22rotate%2832%2012%2056%29%22/%3E%0A%3Cellipse%20cx%3D%2226%22%20cy%3D%2218%22%20rx%3D%224.2%22%20ry%3D%227.5%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-20%2026%2018%29%22/%3E%0A%3Cellipse%20cx%3D%2234%22%20cy%3D%2244%22%20rx%3D%224.6%22%20ry%3D%228%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2860%2034%2044%29%22/%3E%0A%3Cellipse%20cx%3D%2253%22%20cy%3D%2221%22%20rx%3D%223.8%22%20ry%3D%227%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.9%22%20transform%3D%22rotate%28-35%2053%2021%29%22/%3E%0A%3Cellipse%20cx%3D%2263%22%20cy%3D%229%22%20rx%3D%223.6%22%20ry%3D%226.6%22%20fill%3D%22%236b7a4f%22%20opacity%3D%220.9%22%20transform%3D%22rotate%2815%2063%209%29%22/%3E%0A%3Cellipse%20cx%3D%2256%22%20cy%3D%2219%22%20rx%3D%223%22%20ry%3D%225.4%22%20fill%3D%22%237c8f5e%22%20opacity%3D%220.85%22%20transform%3D%22rotate%2870%2056%2019%29%22/%3E%0A%3Ccircle%20cx%3D%2218%22%20cy%3D%2244%22%20r%3D%222.4%22%20fill%3D%22%238a3230%22%20opacity%3D%220.75%22/%3E%0A%3Ccircle%20cx%3D%2240%22%20cy%3D%2236%22%20r%3D%222%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3Ccircle%20cx%3D%2258%22%20cy%3D%2214%22%20r%3D%222.1%22%20fill%3D%22%238a3230%22%20opacity%3D%220.7%22/%3E%0A%3C/svg%3E") no-repeat center / contain;
+    opacity:.4; transform: rotate(-8deg); pointer-events:none;
+  }
+
+  .choices{ display:flex; flex-direction:column; margin-top: 8px; }
+  button.choice{
+    font-family: 'Crimson Pro', Georgia, serif; font-size:1.05rem; line-height:1.7; text-align:left;
+    background: none;
+    color: var(--ink); border: none;
+    border-top: 1px solid var(--border);
+    padding: 1.15rem 0.4rem; cursor:pointer;
+    transition: color .15s ease, padding-left .15s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .choices button.choice:last-child{ border-bottom: 1px solid var(--border); }
+  button.choice:hover, button.choice:focus-visible{
+    color: var(--torch);
+    padding-left: 0.85rem;
+    border-color: #4a4b53;
+    box-shadow: inset 3px 0 0 0 var(--torch), 0 0 16px rgba(168,201,232,.12);
+    outline: none;
+  }
+
+  .controls{ display:flex; justify-content:space-between; margin-top:28px; }
+  .ctrl-btn{ font-family:'Space Grotesk', sans-serif; font-size:12px; background:none;
+    border:none; color: var(--ink-dim); cursor:pointer; padding:2px 0; }
+  .ctrl-btn:hover{ color: var(--ink); }
+  .ctrl-btn[hidden]{ visibility:hidden; }
+
+  label{ display:block; font-family:'Space Grotesk', sans-serif; font-size:11px;
+    color: var(--ink-dim); letter-spacing:.03em; margin: 12px 0 4px; }
+  label:first-child{ margin-top:0; }
+  input[type=text], textarea{
+    width:100%; background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    color: var(--ink); font-family:'Crimson Pro', Georgia, serif; font-size:15px;
+    padding:9px 10px; resize: vertical;
+  }
+  textarea{ min-height: 64px; }
+  .session-card textarea{ min-height: 120px; }
+  input[type=text]:focus, textarea:focus{ outline:none; border-color: var(--torch); }
+
+  input[type=number]{
+    background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    color: var(--ink); font-family:'Crimson Pro', Georgia, serif; font-size:15px;
+    padding:8px 6px; text-align:center; width:100%;
+  }
+  input[type=number]:focus{ outline:none; border-color: var(--torch); }
+
+  .char-card{ position:relative; }
+  .class-watermark{
+    position:absolute; right:16px; bottom:10px; font-size:78px; line-height:1;
+    opacity:.07; pointer-events:none; user-select:none; z-index:0;
+  }
+  .class-icon-inline{ font-size:13px; margin-left:2px; }
+  .char-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .remove-btn{ font-family:'Space Grotesk', sans-serif; font-size:12px; background:none;
+    border:1px solid var(--border); color: var(--blood); border-radius:3px; padding:4px 9px; cursor:pointer; }
+  .remove-btn:hover{ border-color: var(--blood); }
+
+  .add-btn{ font-family:'Space Grotesk', sans-serif; font-size:14px;
+    background:
+      repeating-linear-gradient(128deg, rgba(0,0,0,.06) 0px, rgba(0,0,0,.06) 1px, transparent 1px, transparent 5px),
+      var(--stone-2);
+    color: var(--torch); border:1px dashed var(--border);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.14);
+    border-radius:3px; padding:12px; width:100%; cursor:pointer; }
+  .add-btn:hover{ border-color: var(--torch); }
+
+  .import-card textarea{ min-height: 130px; font-size: 0.92rem; margin-bottom: 10px; }
+  .import-file-row{ display:flex; align-items:center; gap: 12px; margin-top: 12px; }
+  .file-btn{
+    font-family:'Space Grotesk', sans-serif; font-size:13px;
+    border:1px solid var(--border); border-radius:3px; padding:8px 14px;
+    color: var(--torch); cursor:pointer; display:inline-block;
+  }
+  .file-btn:hover{ border-color: var(--torch); }
+  .import-file-status{ font-size: 12px; color: var(--ink-dim); }
+  .filter-row{ margin-bottom: 14px; }
+  .filter-row input{ font-family:'Crimson Pro', Georgia, serif; }
+
+  .save-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .save-btn{ flex:1; font-family:'Space Grotesk', sans-serif; font-size:14px;
+    background:
+      repeating-linear-gradient(128deg, rgba(0,0,0,.06) 0px, rgba(0,0,0,.06) 1px, transparent 1px, transparent 5px),
+      var(--stone-2);
+    color: var(--ink); border:1px solid var(--border);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.03);
+    border-radius:3px; padding:12px; cursor:pointer; min-width: 160px; }
+  .save-btn:hover{ border-color: var(--torch); }
+  .save-note{ font-size:13px; color: var(--ink-dim); margin-top: 10px; }
+  #fileInput{ display:none; }
+
+  .log-entry{ font-size:14px; color: var(--ink-dim); border-bottom:1px solid var(--border);
+    padding: 8px 0; }
+  .log-entry:last-child{ border-bottom:none; }
+  .log-empty{ font-size:14px; color: var(--ink-dim); font-style: italic; }
+
+  /* --- cabecera de ficha --- */
+  .sheet-header{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .sheet-header .names{ flex:1; }
+  .compact-summary{ font-size: 0.85rem; color: var(--ink-dim); margin: 0.5rem 0 0; }
+  .npc-name-display{ font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-size: 1.05rem; color: var(--ink); margin: 0 0 2px; }
+  .level-badge{ width:46px; height:46px; border-radius:50%; background:var(--stone-3);
+    border:2px solid var(--torch); display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:18px; color:var(--torch);
+    flex-shrink:0; box-shadow: 0 0 12px rgba(168,201,232,.3); }
+  .level-badge .lv-label{ display:none; }
+  .identity-row{ display:flex; gap:10px; }
+  .identity-row > div{ flex:1; }
+  .id-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+
+  /* --- secciones de la ficha --- */
+  .sheet-section{ margin-top: 26px; border-top: 1px solid var(--border); padding-top: 22px; }
+
+  /* --- nivel / vida (barras) --- */
+  .gauge-row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .gauge-row:first-of-type{ margin-top:0; }
+  .gauge-row label{ margin:0; flex-shrink:0; width:52px; }
+  .gauge-inputs{ display:flex; align-items:center; gap:5px; flex-shrink:0; }
+  .gauge-inputs input[type=number]{ width:50px; padding:6px 4px; }
+  .gauge-sep{ color: var(--ink-dim); font-family:'Space Grotesk', sans-serif; font-size:13px; }
+  .bar-track{ flex:1; min-width:70px; height:8px; background: var(--stone-2); border:1px solid var(--border);
+    border-radius:4px; overflow:hidden; }
+  .bar-fill{ height:100%; background: var(--torch); transition: width .2s; }
+  .bar-fill.hp{ background: var(--blood); }
+
+  /* --- combate: CA / iniciativa / velocidad / competencia --- */
+  .mini-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; }
+  .mini-item{ background: var(--stone-2); border:1px solid var(--border); border-radius:10px;
+    padding:10px 4px 8px; text-align:center; }
+  .mini-item label{ margin:0 0 4px; text-align:center; font-size:9px; }
+  .mini-item input{ width:100%; text-align:center; border:none; background:transparent;
+    color:var(--ink); font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-size:18px; font-weight:700; padding:2px; }
+  .mini-item input:focus{ outline:none; }
+  .mini-item.readonly{ opacity:.85; }
+  .mini-item .static-val{ font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-size:18px; font-weight:700; }
+
+  /* --- atributos: caja con círculo, como una hoja real --- */
+  .stat-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+  .stat-item{ background: var(--stone-2); border:1px solid var(--border); border-radius:12px;
+    padding:12px 6px 14px; text-align:center; }
+  .stat-item label{ display:block; margin:0 0 6px; text-align:center; font-size:10px;
+    letter-spacing:.08em; text-transform:uppercase; color: var(--ink-dim); }
+  .stat-item .mod{ font-family:'Cinzel', 'Crimson Pro', Georgia, serif; font-size:26px;
+    font-weight:700; color: var(--ink); line-height:1; margin-bottom:10px; }
+  .stat-item .score-circle{ width:42px; height:42px; border-radius:50%; margin:0 auto;
+    background: var(--stone); border:2px solid var(--border); display:flex;
+    align-items:center; justify-content:center; }
+  .stat-item .score-circle input{ width:100%; padding:0; font-size:15px; border:none;
+    background:transparent; text-align:center; color: var(--ink); }
+  .stat-item .score-circle input:focus{ outline:none; }
+  .stat-item:has(.score-circle input:focus){ border-color: var(--torch); }
+
+  /* --- salvación de muerte --- */
+  .death-row{ display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .death-row label{ margin:0; width:52px; flex-shrink:0; }
+  .death-dots{ display:flex; gap:6px; }
+  .death-dot{ width:16px; height:16px; border-radius:50%; border:1px solid var(--border);
+    background: var(--stone-2); cursor:pointer; padding:0; }
+  .death-dot.success.filled{ background: var(--moss); border-color: var(--moss); box-shadow: 0 0 6px var(--moss); }
+  .death-dot.fail.filled{ background: var(--blood); border-color: var(--blood); box-shadow: 0 0 6px var(--blood); }
+
+  /* --- desplegables --- */
+  details.sheet-details{ margin-top:14px; border-top:1px solid var(--border); padding-top:12px; }
+  details.sheet-details > summary{ font-family:'Space Grotesk', sans-serif; font-size:11px;
+    letter-spacing:.04em; color: var(--ink-dim); cursor:pointer; list-style:none; }
+  details.sheet-details > summary::-webkit-details-marker{ display:none; }
+  details.sheet-details > summary::before{ content:"▸  "; color: var(--torch); }
+  details.sheet-details[open] > summary::before{ content:"▾  "; }
+  details.sheet-details > summary:hover{ color: var(--ink); }
+  .details-body{ margin-top:12px; }
+
+  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  @media (max-width: 520px){ .two-col{ grid-template-columns: 1fr; } }
+  .prof-heading{ font-family:'Space Grotesk', sans-serif; font-size:10px; letter-spacing:.03em;
+    color: var(--ink-dim); margin: 0 0 6px; }
+  .prof-list{ display:flex; flex-direction:column; }
+  .prof-row{ display:flex; align-items:center; gap:8px; font-size:13px; padding:5px 0;
+    border-bottom:1px solid var(--border); }
+  .prof-row:last-child{ border-bottom:none; }
+  .prof-clickzone{ display:flex; align-items:center; gap:8px; flex:1; cursor:pointer; min-width:0;
+    background:none; border:none; padding:0; font:inherit; color:inherit; text-align:left; }
+  .add-prof-btn{
+    font-family:'Space Grotesk', sans-serif; font-size:11px; color: var(--torch);
+    background: var(--stone-3); border:1px solid var(--border); border-radius:10px;
+    padding:2px 7px; cursor:pointer; flex-shrink:0;
+  }
+  .add-prof-btn:hover{ border-color: var(--torch); }
+  .add-prof-btn:active{ transform: scale(.94); }
+  .add-prof-btn.active{ background: var(--torch-dim); color: var(--ink); border-color: var(--torch); }
+  .prof-row .prof-label{ flex:1; color: var(--ink); }
+  .prof-row .prof-mod{ width:46px; text-align:right; flex-shrink:0; }
+  .prof-mod-input{ width:100%; box-sizing:border-box; text-align:right; background:none; border:none;
+    color: var(--torch); font-family:'Space Grotesk', sans-serif; font-size:13px; padding:2px 3px; }
+  .prof-mod-input:focus{ outline:none; border-bottom:1px solid var(--torch); }
+  .passive-note{ font-size:12px; color: var(--ink-dim); margin-top:10px; font-style:italic; }
+
+  /* --- ataques --- */
+  .attack-entry{ background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    padding:8px 10px; margin-bottom:6px; display:grid; grid-template-columns: 2fr 1fr 1fr auto;
+    gap:6px; align-items:center; }
+  .attack-entry input{ background:transparent; border:none; color:var(--ink);
+    font-family:'Crimson Pro', Georgia, serif; font-size:14px; padding:4px 2px; width:100%; }
+  .attack-entry input:focus{ outline:none; }
+  .attack-entry input.num{ text-align:center; }
+  @media (max-width: 480px){ .attack-entry{ grid-template-columns: 1fr 1fr; } }
+  .attack-head{ display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:6px; padding: 0 10px 4px; }
+  @media (max-width: 480px){ .attack-head{ display:none; } }
+  .attack-head span{ font-family:'Space Grotesk', sans-serif; font-size:9px; color: var(--ink-dim); letter-spacing:.03em; }
+
+  /* --- rasgos --- */
+  .trait-entry{ background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    padding:8px 10px; margin-bottom:6px; }
+  .trait-entry-head{ display:flex; gap:8px; align-items:center; margin-bottom:4px; }
+  .trait-entry-head input{ flex:1; background:transparent; border:none; color:var(--ink);
+    font-family:'Crimson Pro', Georgia, serif; font-size:14px; font-weight:600; padding:4px 2px; }
+  .trait-entry-head input:focus{ outline:none; }
+  .trait-entry textarea{ min-height: 54px; font-size:13px; }
+
+  /* --- conjuros --- */
+  .spell-header-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .spell-header-grid label{ margin: 0 0 4px; }
+  .spell-header-grid input{ width:100%; }
+  @media (max-width: 480px){ .spell-header-grid{ grid-template-columns: 1fr; } }
+  .spell-slots-grid{ display:grid; grid-template-columns: repeat(9, 1fr); gap:6px; margin-top:6px; }
+  @media (max-width: 480px){ .spell-slots-grid{ grid-template-columns: repeat(5, 1fr); } }
+  .spell-slot-box{ background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    padding:6px 2px; text-align:center; }
+  .spell-slot-box label{ display:block; margin:0 0 3px; font-size:9px; text-align:center; }
+  .spell-slot-box input{ width:100%; text-align:center; border:none; background:transparent;
+    color:var(--ink); font-family:'Crimson Pro', Georgia, serif; font-size:14px; padding:2px; }
+  .spell-entry{ background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    padding:8px 10px; margin-bottom:6px; }
+  .spell-entry-row{ display:grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap:6px; align-items:center; margin-bottom:4px; }
+  @media (max-width: 480px){ .spell-entry-row{ grid-template-columns: 1fr 1fr; } }
+  .spell-entry-row input{ background:transparent; border:none; color:var(--ink);
+    font-family:'Crimson Pro', Georgia, serif; font-size:14px; padding:4px 2px; width:100%; }
+  .spell-entry-row input:focus{ outline:none; }
+  .spell-entry-row .spell-name{ font-weight:600; }
+  .spell-entry-row .spell-mini{ text-align:center; font-size:12px; }
+  .spell-entry textarea{ min-height: 54px; font-size:13px; }
+
+  /* --- inventario --- */
+  .inv-entry{ display:flex; align-items:center; gap:8px; background: var(--stone-2);
+    border:1px solid var(--border); border-radius:3px; padding:6px 10px; margin-bottom:6px; }
+  .inv-entry input[type=text]{ flex:1; padding:6px 2px; background:transparent; border:none; }
+  .inv-entry input[type=text]:focus{ outline:none; }
+  .inv-empty{ font-size:13px; color: var(--ink-dim); font-style: italic; margin: 0 0 10px; }
+
+  /* --- inventario estructurado --- */
+  .inv-entry-full{ background: var(--stone-2); border:1px solid var(--border); border-radius:6px;
+    padding:10px 12px; margin-bottom:8px; }
+  .inv-entry-head{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .inv-entry-head .inv-name{ flex:1; font-weight:600; font-family:'Crimson Pro', Georgia, serif;
+    font-size:14px; background:transparent; border:none; color: var(--ink); padding:4px 2px; }
+  .inv-entry-head .inv-name:focus{ outline:none; }
+  .inv-status{ font-family:'Space Grotesk', sans-serif; font-size:11px; background: var(--stone-3);
+    color: var(--ink-dim); border:1px solid var(--border); border-radius:3px; padding:4px 6px; }
+  .inv-entry-details{ display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:6px; }
+  @media (max-width: 480px){ .inv-entry-details{ grid-template-columns: 1fr; } }
+  .inv-entry-details input{ font-size:12px; background: var(--stone-3); border:1px solid var(--border);
+    border-radius:3px; padding:6px 8px; color: var(--ink); }
+  .inv-entry-full textarea{ min-height:44px; font-size:12px; margin-bottom:0; }
+  .inv-recover-row{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--blood); }
+  .inv-recover-row label{ margin:0 0 4px; color: var(--blood); }
+  .inv-recover-row input{ font-size:12px; background: var(--stone-3); border:1px solid var(--border);
+    border-radius:3px; padding:6px 8px; color: var(--ink); width:100%; }
+
+  .inv-entry-full.status-lost_temp{ border-color: var(--blood); }
+  .inv-entry-full.status-lost_forever{ opacity:.6; }
+  .inv-entry-full.status-lost_forever .inv-name{ text-decoration: line-through; }
+
+  .add-inv-btn, .add-atk-btn{ font-family:'Space Grotesk', sans-serif; font-size:13px;
+    background: var(--stone-2); color: var(--torch); border:1px dashed var(--border);
+    border-radius:3px; padding:8px; width:100%; cursor:pointer; }
+  .add-inv-btn:hover, .add-atk-btn:hover{ border-color: var(--torch); }
+
+  .inv-remove, .atk-remove{ font-family:'Space Grotesk', sans-serif; font-size:12px; background:none;
+    border:1px solid var(--border); color: var(--blood); border-radius:3px; padding:5px 8px;
+    cursor:pointer; flex-shrink:0; }
+  .inv-remove:hover, .atk-remove:hover{ border-color: var(--blood); }
+
+  /* --- reputación --- */
+  .rep-section{ margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .rep-entry{ background: var(--stone-2); border:1px solid var(--border); border-radius:3px;
+    padding: 10px; margin-bottom: 8px; }
+  .rep-row{ display:flex; gap:8px; align-items:flex-start; }
+  .rep-row .rep-fields{ flex:1; }
+  .rep-row select{
+    width:100%; background: var(--stone-3); border:1px solid var(--border); border-radius:3px;
+    color: var(--ink); font-family:'Space Grotesk', sans-serif; font-size:13px; padding: 8px 8px;
+  }
+  .rep-row select:focus{ outline:none; border-color: var(--torch); }
+  .rep-remove{ font-family:'Space Grotesk', sans-serif; font-size:12px; background:none;
+    border:1px solid var(--border); color: var(--blood); border-radius:3px; padding:6px 9px;
+    cursor:pointer; flex-shrink:0; }
+  .rep-remove:hover{ border-color: var(--blood); }
+  .rep-empty{ font-size:13px; color: var(--ink-dim); font-style: italic; margin: 0 0 10px; }
+  .add-rep-btn{ font-family:'Space Grotesk', sans-serif; font-size:13px;
+    background: var(--stone-2); color: var(--torch); border:1px dashed var(--border);
+    border-radius:3px; padding:8px; width:100%; cursor:pointer; }
+  .add-rep-btn:hover{ border-color: var(--torch); }
+
+  .standing-bien{ color: var(--moss) !important; }
+  .standing-neutral{ color: var(--ink-dim) !important; }
+  .standing-mal{ color: var(--blood) !important; }
+
+  /* --- tirador de dados flotante --- */
+  .dice-fab{
+    position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px;
+    border-radius: 50%;
+    background:
+      repeating-linear-gradient(128deg, rgba(0,0,0,.08) 0px, rgba(0,0,0,.08) 1px, transparent 1px, transparent 5px),
+      var(--stone-3);
+    border: 2px solid var(--torch);
+    color: var(--torch); font-size: 24px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; z-index: 500;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.2), 0 4px 14px rgba(0,0,0,.45);
+    transition: background .15s ease, box-shadow .15s ease;
+  }
+  .dice-fab:hover{
+    background:
+      repeating-linear-gradient(128deg, rgba(0,0,0,.08) 0px, rgba(0,0,0,.08) 1px, transparent 1px, transparent 5px),
+      var(--stone-2);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.2), 0 4px 20px rgba(168,201,232,.4);
+  }
+  .dice-fab.loaded::after{
+    content:""; position:absolute; top:3px; right:5px; width:7px; height:7px;
+    border-radius:50%; background: var(--blood); box-shadow: 0 0 4px var(--blood);
+  }
+
+  /* --- reloj de tensión (ratas / ronda del guardia) --- */
+  .tension-fab{
+    position: fixed; left: 18px; bottom: 18px; z-index: 40;
+    background: var(--stone); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; font-family:'Space Grotesk', sans-serif; font-size:12px; color: var(--ink);
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); min-width: 190px;
+  }
+  .tension-notify-dot{
+    display:none; position:absolute; top:-6px; right:-6px; width:13px; height:13px;
+    border-radius:50%; background: var(--blood); box-shadow: 0 0 7px var(--blood);
+  }
+  .tension-notify-dot.show{ display:block; }
+  .tension-header{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+    font-size:10px; letter-spacing:.06em; color: var(--ink-dim); text-transform: uppercase;
+  }
+  .tension-header .ctrl-btn{ padding: 0 4px; font-size:14px; }
+  .tension-row-block{ margin-bottom: 8px; }
+  .tension-label{ color: var(--ink); }
+  .tension-value{ font-weight:700; color: var(--torch); transition: color .3s ease; }
+  .tension-sub{ color: var(--ink-dim); font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .tension-sub span, .tension-value{ font-variant-numeric: tabular-nums; }
+  .tension-value.flash, .tension-sub.flash span, .tension-sub.flash{ color: var(--blood); }
+  .tension-controls{ display:flex; gap:8px; margin-top:4px; }
+  .tension-controls .ctrl-btn{ border:1px solid var(--border); border-radius:3px; padding:5px 10px; }
+  .tension-controls .ctrl-btn:hover{ border-color: var(--torch); }
+  .tension-guard-controls{ display:flex; gap:6px; flex-wrap:wrap; margin: 6px 0; }
+  .tension-guard-controls .ctrl-btn{ border:1px solid var(--border); border-radius:3px; padding:4px 8px; font-size:11px; }
+  .tension-guard-controls .ctrl-btn:hover{ border-color: var(--torch); }
+  .tension-call-btn{ width:100%; font-size:12px; padding:8px; margin-top:2px; }
+  .tension-result{ font-size:11px; color: var(--ink-dim); margin: 6px 0 0; min-height:14px; line-height:1.4; }
+  .dice-menu{
+    position: fixed; right: 18px; bottom: 84px; background: var(--stone);
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px;
+    display: none; flex-direction: column; gap: 4px; z-index: 500;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); min-width: 90px;
+  }
+  .dice-menu.open{ display: flex; }
+  .dice-menu button{
+    background:
+      repeating-linear-gradient(128deg, rgba(0,0,0,.07) 0px, rgba(0,0,0,.07) 1px, transparent 1px, transparent 5px),
+      var(--stone-2);
+    border: 1px solid var(--border); border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    color: var(--ink); font-family:'Space Grotesk', sans-serif; font-size: 13px;
+    padding: 8px 14px; cursor: pointer; text-align: left;
+  }
+  .dice-menu button:hover{ border-color: var(--torch); color: var(--torch); }
+
+  .dice-overlay{
+    position: fixed; inset: 0; background: rgba(10,8,5,.78); display: none;
+    align-items: center; justify-content: center; z-index: 600;
+  }
+  .dice-overlay.open{ display: flex; }
+  .dice-overlay-card{
+    background: var(--stone); border: 1px solid var(--border); border-radius: 12px;
+    padding: 34px 40px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+    max-width: 90vw; box-sizing: border-box;
+  }
+  .dice-shape{
+    width: 120px; height: 120px; background: var(--stone-3);
+    border: 1px solid var(--torch-dim); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform .1s ease, border-color .15s ease;
+  }
+  .dice-shape:hover{ border-color: var(--torch); transform: scale(1.04); }
+  .dice-shape:active{ transform: scale(.96); }
+  .dice-shape span{
+    font-family:'Space Grotesk', sans-serif; font-size: 42px; font-weight: 700; color: var(--ink);
+    transition: color .15s ease;
+  }
+  .dice-shape span.result{ color: var(--torch); }
+  .dice-overlay-label{ font-family:'Space Grotesk', sans-serif; font-size: 13px; color: var(--ink-dim); }
+
+  /* --- dado de castigos --- */
+  .punishment-roller{ display:flex; align-items:center; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .punishment-shape{
+    width: 96px; height: 96px; flex-shrink: 0;
+    background: var(--stone-3); border: 1px solid var(--blood);
+    box-shadow: 0 0 18px rgba(107,32,40,.25);
+  }
+  .punishment-shape:hover{ border-color: #9a3540; box-shadow: 0 0 22px rgba(107,32,40,.4); }
+  .punishment-shape span{ color: var(--ink); }
+  .punishment-result{ flex: 1; min-width: 200px; }
+
+  /* --- casos de la subtrama de los malos --- */
+  .villain-case-result{ background: var(--stone-2); border:1px solid var(--blood); border-radius:6px;
+    padding:14px 16px; }
+  .villain-case-result .eyebrow{ color: var(--blood); }
+  .villain-case-row{ display:flex; gap:10px; align-items:flex-start; background: var(--stone-2);
+    border:1px solid var(--border); border-radius:6px; padding:10px 12px; margin-bottom:8px; }
+  .villain-case-row.resolved{ opacity:.55; }
+  .villain-case-row textarea{ flex:1; min-height:44px; font-size:13px; margin-bottom:0; }
+  .villain-case-row .vc-controls{ display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+  .villain-case-row .vc-controls button{ font-family:'Space Grotesk', sans-serif; font-size:11px;
+    background: var(--stone-3); border:1px solid var(--border); border-radius:3px; padding:4px 8px; cursor:pointer; white-space:nowrap; }
+  .villain-case-row .vc-controls button:hover{ border-color: var(--torch); }
+  .villain-case-row .vc-controls .vc-remove:hover{ border-color: var(--blood); color: var(--blood); }
+  .punishment-result .eyebrow{ color: var(--blood); }
+  .punishment-result p.body-text{ margin: 0; }
+  .punishment-actions{ display:flex; gap: 14px; margin-top: 10px; }
+  .punishment-edit-box{ margin-top: 12px; }
+  .punishment-edit-box textarea{ min-height: 70px; }
+  .punishment-edit-actions{ display:flex; gap: 14px; margin-top: 8px; align-items:center; }
+  .punishment-edit-actions .add-btn{ width:auto; padding:6px 14px; font-size:13px; }
+
+  .punishment-row{
+    display:flex; align-items:flex-start; gap: 1rem;
+    padding: 0.9rem 0; border-top: 1px solid var(--border);
+  }
+  .punishment-row:last-child{ border-bottom: 1px solid var(--border); }
+  .punishment-row label{
+    flex-shrink:0; width: 1.8rem; margin: 0.4rem 0 0;
+    font-family:'Space Grotesk', sans-serif; font-size: 0.85rem; color: var(--ink-dim); text-align:right;
+  }
+  .punishment-row textarea{ flex: 1; min-height: 44px; }
+  .dice-overlay-close{
+    margin-top: 4px; background: none; border: 1px solid var(--border); color: var(--ink-dim);
+    font-family:'Space Grotesk', sans-serif; font-size: 12px; padding: 7px 16px; border-radius: 4px;
+    cursor: pointer;
+  }
+  .dice-overlay-close:hover{ border-color: var(--torch); color: var(--ink); }
+  .dice-d4  { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+  .dice-d6  { clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%); }
+  .dice-d8  { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+  .dice-d10 { clip-path: polygon(50% 0%, 100% 35%, 82% 100%, 18% 100%, 0% 35%); }
+  .dice-d12 { clip-path: polygon(50% 0%, 90% 20%, 100% 65%, 70% 100%, 30% 100%, 0% 65%, 10% 20%); }
+  .dice-d20 { clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+
+  .lp-trail{ display:flex; gap:6px; margin: 0 0 16px; flex-wrap:wrap; }
+  .lp-trail span{ width:7px; height:7px; border-radius:50%; background: var(--border); }
+  .lp-trail span.lit{ background: var(--torch); box-shadow: 0 0 5px rgba(168,201,232,.7); }
+
+  /* --- adaptación a pantallas estrechas (móvil) --- */
+  @media (max-width: 480px){
+    header{ padding-left: 0; padding-right: 0; }
+    header::before{ width: 60px; height: 60px; top: -8px; right: -6px; }
+    .moon{ width: 30px; height: 30px; }
+    header h1{ font-size: 1.5rem; }
+    .card{ padding: 1.5rem 1.15rem 1.25rem; }
+    nav.tabs{ gap: 1rem; }
+    nav.tabs button{ font-size: 0.8rem; padding: 0 2px 0.65rem; }
+    .dice-fab{ width: 48px; height: 48px; font-size: 20px; right: 12px; bottom: 12px; }
+    .tension-fab{ min-width: 150px; padding: 9px 12px; left: 12px; bottom: 12px; font-size: 11px; }
+    .dice-menu{ right: 12px; bottom: 68px; }
+  }
+
+  /* --- tableta --- */
+  @media (min-width: 481px) and (max-width: 768px){
+    header h1{ font-size: 1.75rem; }
+    .card{ padding: 1.75rem 1.5rem; }
+    nav.tabs{ gap: 1.25rem; }
+  }
+
+  /* --- escritorio: se expande con elegancia, sin sensación de caja pequeña --- */
+  @media (min-width: 769px){
+    .card{ padding: 2.5rem 2.75rem; }
+  }
+</style>
+</head>
+<body>
+<div class="embers" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="wrap">
+  <header>
+    <div class="title-row">
+      <svg class="moon" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <mask id="crescentMask">
+            <rect width="100" height="100" fill="black"/>
+            <circle cx="50" cy="50" r="42" fill="white"/>
+            <circle cx="66" cy="43" r="38" fill="black"/>
+          </mask>
+          <radialGradient id="moonGrad" cx="35%" cy="32%" r="75%">
+            <stop offset="0%" stop-color="#f2f4f8"/>
+            <stop offset="45%" stop-color="#cad1db"/>
+            <stop offset="75%" stop-color="#98a1b0"/>
+            <stop offset="100%" stop-color="#636c7b"/>
+          </radialGradient>
+          <filter id="craterTex" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" result="noise"/>
+            <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0" result="noiseAlpha"/>
+            <feComposite in="noiseAlpha" in2="SourceGraphic" operator="in" result="texture"/>
+            <feBlend in="SourceGraphic" in2="texture" mode="multiply"/>
+          </filter>
+        </defs>
+        <circle cx="50" cy="50" r="42" fill="url(#moonGrad)" filter="url(#craterTex)" mask="url(#crescentMask)"/>
+        <g mask="url(#crescentMask)" opacity="0.6">
+          <circle cx="29" cy="34" r="5.2" fill="#5f6877"/>
+          <circle cx="21" cy="55" r="3.2" fill="#4d5563"/>
+          <circle cx="33" cy="67" r="4" fill="#57606e"/>
+          <circle cx="17" cy="41" r="2" fill="#454c58"/>
+          <circle cx="26" cy="20" r="2.6" fill="#525b69"/>
+        </g>
+      </svg>
+      <h1>Mesa de mando</h1>
+    </div>
+    <p>La prisión — panel del máster</p>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="partida" class="active">Partida</button>
+    <button data-tab="resumen">Resumen</button>
+    <button data-tab="personajes">Personajes</button>
+    <button data-tab="pueblo">El pueblo</button>
+    <button data-tab="npcs">NPCs</button>
+    <button data-tab="castigos">Castigos</button>
+    <button data-tab="malos">Los malos</button>
+    <button data-tab="guardar">Guardar / cargar</button>
+  </nav>
+
+  <!-- PARTIDA -->
+  <section class="panel active" id="tab-partida">
+    <div class="card" id="storyCard">
+      <div class="lp-trail" id="trail"></div>
+      <p class="eyebrow" id="eyebrow"></p>
+      <h2 id="title"></h2>
+      <div id="text"></div>
+      <div class="choices" id="choices"></div>
+      <div class="controls">
+        <button class="ctrl-btn" id="backBtn">← atrás</button>
+        <button class="ctrl-btn" id="restartBtn">reiniciar historia</button>
+      </div>
+    </div>
+    <div class="card log">
+      <p class="eyebrow">registro de la partida</p>
+      <div id="logList"></div>
+    </div>
+  </section>
+
+  <!-- PERSONAJES -->
+  <section class="panel" id="tab-personajes">
+    <div class="card import-card">
+      <p class="eyebrow">importar ficha</p>
+      <h2>Pega el texto o sube el PDF</h2>
+      <p class="body-text">Pega texto con formato «Etiqueta: valor» (una cosa por línea), o sube directamente el PDF de la hoja oficial (formato Nivel20) y la app intentará reconocer los campos, incluyendo rasgos y conjuros si el PDF los trae. Después puedes corregir cualquier dato a mano — el jugador (Paco, Mario...) lo puedes poner o cambiar en el campo «Jugador» de la ficha ya creada. Para añadir rasgos o conjuros pegando texto, usa una línea por cada uno: «Rasgo: Nombre | Descripción» o «Conjuro: Nombre | Nivel | Escuela | Alcance».</p>
+      <textarea id="charImportText" placeholder="Nombre: Aldric Ferrian&#10;Jugador: Marta&#10;Raza: Elfo&#10;Clase: Mago&#10;Nivel: 3&#10;PG: 18  CA: 12&#10;Fuerza: 8  Destreza: 14&#10;Historia: Huyó de su ciudad...&#10;Rasgo: Visión en la oscuridad | Ves en la penumbra como si fuera luz&#10;Conjuro: Bola de fuego | 3 | Evocación | 45 metros"></textarea>
+      <button class="add-btn" type="button" id="charImportBtn">rellenar ficha nueva con este texto</button>
+      <div class="import-file-row">
+        <label class="file-btn" for="charPdfInput">subir PDF de la hoja</label>
+        <input type="file" id="charPdfInput" accept="application/pdf" hidden>
+        <span class="import-file-status" id="charPdfStatus"></span>
+      </div>
+    </div>
+    <div class="filter-row">
+      <input type="text" id="charFilter" placeholder="Buscar por jugador, personaje, clase o raza...">
+    </div>
+    <div id="charList"></div>
+    <button class="add-btn" id="addCharBtn">+ añadir jugador</button>
+  </section>
+
+  <!-- RESUMEN -->
+  <section class="panel" id="tab-resumen">
+    <div id="sessionList"></div>
+  </section>
+
+  <!-- PUEBLO -->
+  <section class="panel" id="tab-pueblo">
+    <div class="card town">
+      <p class="eyebrow">estado general del pueblo</p>
+      <label>Situación actual</label>
+      <textarea id="townStatus" placeholder="Cómo está el pueblo ahora mismo..."></textarea>
+      <label>Eventos y cambios notables</label>
+      <textarea id="townEvents" placeholder="Qué ha ido pasando, sesión a sesión..."></textarea>
+    </div>
+  </section>
+
+  <!-- NPCs -->
+  <section class="panel" id="tab-npcs">
+    <div class="card import-card">
+      <p class="eyebrow">importar NPC</p>
+      <h2>Pega el texto o sube el PDF</h2>
+      <p class="body-text">Solo tres campos: nombre, descripción y microhistoria. Si subes un PDF de hoja de personaje, intentará sacar al menos el nombre y el resto del texto lo dejará en la descripción para que lo recortes tú.</p>
+      <textarea id="npcImportText" placeholder="Nombre: José Carlos&#10;Descripción: carcelero corpulento, voz rota...&#10;Microhistoria: empezó a dudar de la prisión tras..."></textarea>
+      <button class="add-btn" type="button" id="npcImportBtn">rellenar NPC nuevo con este texto</button>
+      <div class="import-file-row">
+        <label class="file-btn" for="npcPdfInput">subir PDF de la hoja</label>
+        <input type="file" id="npcPdfInput" accept="application/pdf" hidden>
+        <span class="import-file-status" id="npcPdfStatus"></span>
+      </div>
+    </div>
+    <div id="npcList"></div>
+  </section>
+
+  <!-- CASTIGOS -->
+  <section class="panel" id="tab-castigos">
+    <div class="card punishment-card">
+      <p class="eyebrow">dado de castigos</p>
+      <h2>Tirador de castigos</h2>
+      <p class="body-text">Tira para decidir qué castigo cae sobre los jugadores. Tú defines abajo lo que significa cada número — puedes cambiarlo cuando quieras.</p>
+      <div class="punishment-roller">
+        <div class="dice-shape dice-d20 punishment-shape" id="punishmentShape"><span id="punishmentShapeNum">?</span></div>
+        <div class="punishment-result">
+          <p class="eyebrow" id="punishmentResultLabel">Toca el dado para tirar</p>
+          <p class="body-text" id="punishmentResultText"></p>
+          <div class="punishment-actions" id="punishmentActions" hidden>
+            <button type="button" class="remove-btn" id="punishmentDeleteBtn">borrar este castigo</button>
+            <button type="button" class="ctrl-btn" id="punishmentEditBtn">reemplazar castigo</button>
+          </div>
+          <div class="punishment-edit-box" id="punishmentEditBox" hidden>
+            <textarea id="punishmentEditInput" placeholder="Escribe el nuevo castigo para este número..."></textarea>
+            <div class="punishment-edit-actions">
+              <button type="button" class="add-btn" id="punishmentSaveBtn">guardar</button>
+              <button type="button" class="ctrl-btn" id="punishmentCancelBtn">cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="eyebrow">bloc de notas</p>
+      <h2>Ideas generales de castigos</h2>
+      <p class="body-text">Un espacio libre para apuntar ideas rápidas — sin tener que rellenar cada número por separado. Ej: «Armario — metes al jugador en un armario y clavas espadas alrededor sin tocarlo, para asustar sin bajarle vida».</p>
+      <textarea id="punishmentNotes" style="min-height: 160px;" placeholder="Castigo número uno: armario — encierras al jugador y clavas espadas a su alrededor para asustarlo, evitando puntos clave para no bajarle vida...&#10;&#10;Castigo número cinco: ..."></textarea>
+    </div>
+    <div class="card">
+      <p class="eyebrow">tabla de castigos (1–20)</p>
+      <h2>Define tus castigos</h2>
+      <div id="punishmentList"></div>
+    </div>
+  </section>
+
+  <!-- LOS MALOS -->
+  <section class="panel" id="tab-malos">
+    <div class="card punishment-card">
+      <p class="eyebrow">subtrama de los malos</p>
+      <h2>Avanzar la trama</h2>
+      <p class="body-text">Escribe abajo los casos posibles de esta subtrama. Cuando quieras que avance sola (aunque tus jugadores no hayan hecho nada esta sesión), pulsa el botón y se elige uno al azar entre los que aún no se han usado.</p>
+      <button type="button" class="add-btn" id="rollVillainCaseBtn" style="margin-top:10px;">elegir caso al azar</button>
+      <div id="villainCaseResult" style="margin-top:14px;"></div>
+    </div>
+    <div class="card">
+      <p class="eyebrow">casos posibles</p>
+      <h2>Lista de casos</h2>
+      <div id="villainCaseList"></div>
+      <button class="add-btn" id="addVillainCaseBtn" type="button">+ añadir caso</button>
+      <button class="ctrl-btn" id="resetVillainCasesBtn" type="button" style="margin-top:10px;">reiniciar todos los casos a "sin usar"</button>
+    </div>
+  </section>
+
+  <!-- GUARDAR -->
+  <section class="panel" id="tab-guardar">
+    <div class="card">
+      <p class="eyebrow">guardado automático</p>
+      <p class="body-text">La partida se va guardando sola en este navegador mientras juegas — al volver a abrir la página (en este mismo ordenador), sigues exactamente donde lo dejaste, sin tener que cargar nada a mano.</p>
+      <button class="ctrl-btn" id="newGameBtn" type="button">empezar partida nueva (borra lo guardado en este navegador)</button>
+    </div>
+    <div class="card">
+      <p class="eyebrow">copia de seguridad / pasar a otro dispositivo</p>
+      <p class="body-text">Descarga un archivo con todo el estado actual (historia, personajes y pueblo) como copia de seguridad, o para seguir la partida en otro ordenador. Cárgalo ahí para continuar donde lo dejaste.</p>
+      <div class="save-row">
+        <button class="save-btn" id="saveBtn">Guardar partida (descargar copia)</button>
+        <button class="save-btn" id="loadBtn">Cargar partida (desde archivo)</button>
+        <input type="file" id="fileInput" accept="application/json">
+      </div>
+      <p class="save-note" id="saveNote"></p>
+    </div>
+  </section>
+</div>
+
+<!-- tirador de dados flotante, independiente de las pestañas -->
+<button class="dice-fab" id="diceFab" aria-label="Tirar un dado" title="Tirar un dado">🎲</button>
+
+<div class="tension-fab" id="tensionFab">
+  <span class="tension-notify-dot" id="tensionNotifyDot"></span>
+  <div class="tension-header">
+    <span>reloj de tensión</span>
+    <button type="button" class="ctrl-btn" id="tensionToggleCollapse">–</button>
+  </div>
+  <div class="tension-body" id="tensionBody">
+    <div class="tension-row-block">
+      <div class="tension-label">Ratas: <span class="tension-value" id="tensionRatCount">4</span></div>
+      <div class="tension-sub">próxima duplicación en <span id="tensionRatTimer">05:00</span></div>
+    </div>
+    <div class="tension-row-block">
+      <div class="tension-label">Guardia</div>
+      <div class="tension-sub">próxima ronda en <span id="tensionGuardTimer">15:00</span></div>
+      <div class="tension-guard-controls">
+        <button type="button" class="ctrl-btn" id="tensionGuardMinus">−5 min</button>
+        <button type="button" class="ctrl-btn" id="tensionGuardPlus">+5 min</button>
+        <button type="button" class="ctrl-btn" id="tensionGuardNow">ronda ahora</button>
+      </div>
+      <button type="button" class="add-btn tension-call-btn" id="tensionCallGuardBtn">llamar al guardia</button>
+      <p class="tension-result" id="tensionCallResult"></p>
+    </div>
+    <div class="tension-controls">
+      <button type="button" class="ctrl-btn" id="tensionStartBtn">iniciar</button>
+      <button type="button" class="ctrl-btn" id="tensionResetBtn">reiniciar</button>
+    </div>
+  </div>
+</div>
+<div class="dice-menu" id="diceMenu"></div>
+<div class="dice-overlay" id="diceOverlay">
+  <div class="dice-overlay-card">
+    <p class="dice-overlay-label" id="diceOverlayLabel"></p>
+    <div class="dice-shape" id="diceShape"><span id="diceResultNum">?</span></div>
+    <button class="dice-overlay-close" id="diceOverlayClose">cerrar</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+let pdfWorkerReady = null;
+function ensurePdfWorker(){
+  if(!window.pdfjsLib) return Promise.resolve(false);
+  if(pdfWorkerReady) return pdfWorkerReady;
+  pdfWorkerReady = fetch("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js")
+    .then(resp => resp.text())
+    .then(code => {
+      const blob = new Blob([code], { type: "application/javascript" });
+      pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+      return true;
+    })
+    .catch(() => false);
+  return pdfWorkerReady;
+}
+const nodes = {
+  inicio: {
+    eyebrow: "capítulo 1 — la celda",
+    title: "Prisión",
+    text: [
+      "Aparecéis todos en la prisión, cada uno por vuestros propios delitos. No tenéis nada de inventario ni acceso a vuestras habilidades. Solo veis los barrotes: ni cerradura, ni bisagras, ni nada.",
+      "Cada media hora pasa un policía sin decir nada, aporreando los barrotes a su paso. En la esquina, pegada al muro, hay una rata. Las ratas se duplican cada diez minutos — 1, 2, 4, 8 — y cada vez son más amenazantes."
+    ],
+    choices: [
+      { label: "Le decís algo irrespetuoso al guardia", to: "insulto" },
+      { label: "No decís nada", to: "pan_tirada" }
+    ]
+  },
+  insulto: {
+    eyebrow: "rama — el insulto", title: "El guardia sonríe",
+    text: [
+      "El guardia no responde con enfado. Sonríe de una forma extraña, casi matemática, y masculla algo entre dientes que no llegáis a entender.",
+      "Sentís un escalofrío. Algo acaba de interponerse sobre uno de vosotros."
+    ], ending: true, triggerPunishment: true
+  },
+  pan_tirada: {
+    eyebrow: "capítulo 2 — el pan", title: "Tirada de pan",
+    text: ["Al no decir nada, hay un 50% de posibilidades de que el guardia os tire un mendrugo de pan al pasar."],
+    choices: [
+      { label: "Conseguís el pan", to: "pan_conseguido" },
+      { label: "No conseguís el pan", to: "pan_no_conseguido" }
+    ]
+  },
+  pan_conseguido: {
+    eyebrow: "capítulo 3 — las ratas", title: "Tenéis el pan",
+    text: ["El mendrugo está en vuestras manos. Las ratas, ya multiplicadas varias veces, os miran fijamente, cada vez más amenazantes."],
+    choices: [
+      { label: "Se lo dais a las ratas", to: "ratas_ayudan" },
+      { label: "No se lo dais", to: "ratas_atacan" }
+    ]
+  },
+  ratas_ayudan: { eyebrow: "final de rama", title: "Las ratas ayudan",
+    text: ["Las ratas devoran el pan y, a cambio, deciden ayudaros."], ending: true },
+  ratas_atacan: { eyebrow: "final de rama", title: "Las ratas atacan",
+    text: ["Al no recibir comida, las ratas se lanzan a por vosotros para conseguirla."], ending: true },
+  pan_no_conseguido: {
+    eyebrow: "capítulo 3 — sin pan", title: "No hay pan",
+    text: ["No conseguís el mendrugo. Las ratas os miran con hambre. El guardia observa la escena entre risas y no hace nada."],
+    choices: [
+      { label: "Os quejáis al guardia", to: "quejarse" },
+      { label: "No os quejáis", to: "esperar" }
+    ]
+  },
+  esperar: { eyebrow: "final de rama", title: "Seguís esperando",
+    text: ["Aguantáis en silencio mientras las ratas, cada vez más numerosas, siguen observando desde la esquina."], ending: true },
+  quejarse: {
+    eyebrow: "capítulo 4 — la confrontación", title: "Os quejáis",
+    text: ["El guardia responde de dos formas a la vez: llama a más ratas y os saca de la celda para torturaros durante diez minutos."],
+    choices: [ { label: "No decís nada durante la tortura", to: "torturar_silencio" } ]
+  },
+  torturar_silencio: { eyebrow: "final de rama", title: "Silencio bajo tortura",
+    text: ["Aguantáis los diez minutos sin decir una palabra. Puede que esto haga que el guardia os ayude tirando una antorcha encendida para que os defendáis."], ending: true }
+};
+
+let state = {
+  history: ["inicio"],
+  log: [],
+  characters: [],
+  sessions: [],
+  town: { status: "", events: "" },
+  npcs: [],
+  punishments: Array(20).fill(""),
+  punishmentNotes: "",
+  villainCases: []
+};
+let villainSeq = 0;
+let charSeq = 0;
+let repSeq = 0;
+let invSeq = 0;
+let atkSeq = 0;
+let traitSeq = 0;
+let spellSeq = 0;
+let sessionSeq = 0;
+let npcSeq = 0;
+let lastRolledPunishment = null;
+
+const attrLabels = { fue: "FUE", des: "DES", con: "CON", int: "INT", sab: "SAB", car: "CAR" };
+const standingLabels = { bien: "Bien recibido / con respeto", neutral: "Neutral / recién llegado", mal: "Mal recibido / con recelo" };
+const skillDefs = [
+  { key: "acrobacias", label: "Acrobacias", attr: "des" },
+  { key: "arcanos", label: "Arcanos", attr: "int" },
+  { key: "atletismo", label: "Atletismo", attr: "fue" },
+  { key: "engano", label: "Engaño", attr: "car" },
+  { key: "historia", label: "Historia", attr: "int" },
+  { key: "interpretacion", label: "Interpretación", attr: "car" },
+  { key: "intimidacion", label: "Intimidación", attr: "car" },
+  { key: "investigacion", label: "Investigación", attr: "int" },
+  { key: "juegoManos", label: "Juego de manos", attr: "des" },
+  { key: "medicina", label: "Medicina", attr: "sab" },
+  { key: "naturaleza", label: "Naturaleza", attr: "int" },
+  { key: "percepcion", label: "Percepción", attr: "sab" },
+  { key: "perspicacia", label: "Perspicacia", attr: "sab" },
+  { key: "persuasion", label: "Persuasión", attr: "car" },
+  { key: "religion", label: "Religión", attr: "int" },
+  { key: "sigilo", label: "Sigilo", attr: "des" },
+  { key: "supervivencia", label: "Supervivencia", attr: "sab" },
+  { key: "tratoAnimales", label: "Trato con animales", attr: "sab" }
+];
+
+// --- tabs ---
+document.querySelectorAll("nav.tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("section.panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+
+// --- story ---
+function renderStory(){
+  const id = state.history[state.history.length - 1];
+  const node = nodes[id];
+  document.getElementById("storyCard").classList.toggle("ending", !!node.ending);
+  document.getElementById("eyebrow").textContent = node.eyebrow;
+  document.getElementById("title").textContent = node.title;
+
+  const textWrap = document.getElementById("text");
+  textWrap.innerHTML = "";
+  node.text.forEach(t => {
+    const p = document.createElement("p");
+    p.className = "body-text";
+    p.textContent = t;
+    textWrap.appendChild(p);
+  });
+  if(node.triggerPunishment){
+    const box = document.createElement("div");
+    box.className = "story-punishment";
+    box.innerHTML = '<p class="eyebrow" style="color:var(--blood);margin-top:14px;">maldición</p><p class="body-text" id="storyPunishmentText">tirando el dado...</p>';
+    textWrap.appendChild(box);
+    runStoryPunishmentRoll(document.getElementById("storyPunishmentText"));
+  }
+
+  const choicesWrap = document.getElementById("choices");
+  choicesWrap.innerHTML = "";
+  (node.choices || []).forEach(choice => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = choice.label;
+    btn.addEventListener("click", () => {
+      state.history.push(choice.to);
+      state.log.push(node.title + " → " + choice.label);
+      renderStory();
+      renderLog();
+    });
+    choicesWrap.appendChild(btn);
+  });
+
+  document.getElementById("backBtn").hidden = state.history.length <= 1;
+
+  const trail = document.getElementById("trail");
+  if(trail){
+    trail.innerHTML = "";
+    const total = Math.max(state.history.length, 5);
+    for(let i=0;i<total;i++){
+      const dot = document.createElement("span");
+      if(i < state.history.length) dot.classList.add("lit");
+      trail.appendChild(dot);
+    }
+  }
+}
+document.getElementById("backBtn").addEventListener("click", () => {
+  if(state.history.length > 1){ state.history.pop(); renderStory(); }
+});
+document.getElementById("restartBtn").addEventListener("click", () => {
+  state.history = ["inicio"];
+  renderStory();
+});
+function renderLog(){
+  const wrap = document.getElementById("logList");
+  wrap.innerHTML = "";
+  if(state.log.length === 0){
+    wrap.innerHTML = '<p class="log-empty">Aún no hay decisiones registradas.</p>';
+    return;
+  }
+  state.log.forEach(entry => {
+    const div = document.createElement("div");
+    div.className = "log-entry";
+    div.textContent = entry;
+    wrap.appendChild(div);
+  });
+}
+
+// --- helpers de reglas ---
+function hasVal(v){ return v !== "" && v !== null && v !== undefined; }
+function compactSummaryText(char){
+  const bits = [];
+  const clsRace = [char.charClass, char.race].filter(hasVal).join(" · ");
+  if(clsRace) bits.push(clsRace);
+  if(hasVal(char.hp) || hasVal(char.hpMax)){
+    bits.push("PG " + (hasVal(char.hp) ? char.hp : "—") + "/" + (hasVal(char.hpMax) ? char.hpMax : "—"));
+  }
+  if(hasVal(char.ac)) bits.push("CA " + char.ac);
+  return bits.length ? bits.join(" · ") : "sin datos todavía";
+}
+
+// --- importar ficha: texto con etiquetas "Campo: valor" ---
+function normalizeLabel(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+function parseLabeledCharacterText(text){
+  const result = {};
+  const attrs = {};
+  const traits = [];
+  const spells = [];
+  text.split(/\r?\n/).forEach(line => {
+    const rasgoM = line.match(/^\s*rasgo\s*[:\-–]\s*(.+)$/i);
+    if(rasgoM){
+      const parts = rasgoM[1].split("|").map(s => s.trim());
+      traits.push({ name: parts[0] || "", description: parts[1] || "" });
+      return;
+    }
+    const conjuroM = line.match(/^\s*conjuro\s*[:\-–]\s*(.+)$/i);
+    if(conjuroM){
+      const parts = conjuroM[1].split("|").map(s => s.trim());
+      spells.push({ name: parts[0] || "", level: parts[1] || "", school: parts[2] || "", range: parts[3] || "", description: parts[4] || "" });
+      return;
+    }
+    const m = line.match(/^\s*([^:\-–=]{2,40})[:\-–=]\s*(.+)$/);
+    if(!m) return;
+    const label = normalizeLabel(m[1]);
+    const value = m[2].trim();
+    if(!value) return;
+    if(/^jugador$/.test(label)) result.player = value;
+    else if(/^(nombre|personaje)$/.test(label)) result.name = value;
+    else if(/^(raza|especie)$/.test(label)) result.race = value;
+    else if(/^clase$/.test(label)) result.charClass = value;
+    else if(/^trasfondo$/.test(label)) result.background = value;
+    else if(/^alineamiento$/.test(label)) result.alignment = value;
+    else if(/^nivel$/.test(label)) result.level = value;
+    else if(/^(xp|experiencia)$/.test(label)) result.xp = value;
+    else if(/(xp|experiencia).*(siguiente|proxima|necesaria)/.test(label)) result.xpNext = value;
+    else if(/^(ca|clase de armadura)$/.test(label)) result.ac = value;
+    else if(/^iniciativa$/.test(label)) result.initiative = value;
+    else if(/^velocidad$/.test(label)) result.speed = value;
+    else if(/dado.*golpe/.test(label)) result.hitDice = value;
+    else if(/(pg|puntos de golpe|vida|hp).*max/.test(label)) result.hpMax = value;
+    else if(/(pg|puntos de golpe|vida|hp).*temp/.test(label)) result.hpTemp = value;
+    else if(/^(pg|puntos de golpe|vida|hp)$/.test(label)) result.hp = value;
+    else if(/^(fuerza|fue|str)$/.test(label)) attrs.fue = value;
+    else if(/^(destreza|des|dex)$/.test(label)) attrs.des = value;
+    else if(/^(constitucion|con)$/.test(label)) attrs.con = value;
+    else if(/^(inteligencia|int)$/.test(label)) attrs.int = value;
+    else if(/^(sabiduria|sab|wis)$/.test(label)) attrs.sab = value;
+    else if(/^(carisma|car|cha)$/.test(label)) attrs.car = value;
+    else if(/^personalidad$/.test(label)) result.personality = value;
+    else if(/^ideales$/.test(label)) result.ideals = value;
+    else if(/^vinculos$/.test(label)) result.bonds = value;
+    else if(/^defectos$/.test(label)) result.flaws = value;
+    else if(/^historia$/.test(label)) result.story = value;
+    else if(/(que busca|objetivo|meta)/.test(label)) result.goal = value;
+    else if(/pueblo/.test(label)) result.town = value;
+    else if(/^notas$/.test(label)) result.notes = value;
+  });
+  if(Object.keys(attrs).length) result.attrs = attrs;
+  if(traits.length) result.traits = traits;
+  if(spells.length) result.spells = spells;
+  return result;
+}
+function parseLabeledNpcText(text){
+  const result = {};
+  text.split(/\r?\n/).forEach(line => {
+    const m = line.match(/^\s*([^:\-–=]{2,40})[:\-–=]\s*(.+)$/);
+    if(!m) return;
+    const label = normalizeLabel(m[1]);
+    const value = m[2].trim();
+    if(!value) return;
+    if(/^(nombre|npc)$/.test(label)) result.name = value;
+    else if(/^descripcion$/.test(label)) result.description = value;
+    else if(/(microhistoria|historia)/.test(label)) result.story = value;
+  });
+  return result;
+}
+
+// --- importar PDF de hoja de personaje (formato Nivel20) ---
+function pdfNormLine(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+}
+async function extractPdfItems(file){
+  await ensurePdfWorker();
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const items = [];
+  for(let p = 1; p <= pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    content.items.forEach(it => {
+      if(!it.str.trim()) return;
+      items.push({ text: it.str.trim(), x: it.transform[4], y: it.transform[5], x1: it.transform[4] + it.width, page: p - 1 });
+    });
+  }
+  return items;
+}
+function findItem(items, textMatch){
+  return items.find(it => pdfNormLine(it.text) === textMatch);
+}
+function collectRow(items, yTarget, yTol, xMin, xMax){
+  const row = items.filter(it => Math.abs(it.y - yTarget) <= yTol && it.x >= xMin && it.x < xMax)
+    .sort((a, b) => a.x - b.x);
+  return joinByGap(row);
+}
+function joinByGap(sortedItems, gapThreshold){
+  let out = "";
+  let prevX1 = null;
+  sortedItems.forEach(it => {
+    if(prevX1 !== null && it.x - prevX1 > (gapThreshold || 1.5)) out += " ";
+    out += it.text;
+    prevX1 = it.x1 != null ? it.x1 : it.x + it.text.length * 4;
+  });
+  return out;
+}
+function rightColumnBoxes(items, sequence, xMin){
+  const caps = sequence.map(s => ({ key: s.key, item: findItem(items, s.word) })).filter(c => c.item);
+  caps.sort((a, b) => b.item.y - a.item.y);
+  const out = {};
+  caps.forEach((c, idx) => {
+    const cap = c.item;
+    const prevCap = idx > 0 ? caps[idx - 1].item : null;
+    const upperBound = prevCap ? prevCap.y - 1 : cap.y + 68;
+    const rows = items.filter(it => it.x > xMin && it.y > cap.y && it.y < upperBound);
+    const byLine = {};
+    rows.forEach(it => { const key = Math.round(it.y / 3); (byLine[key] = byLine[key] || []).push(it); });
+    out[c.key] = Object.keys(byLine).sort((a, b) => b - a)
+      .map(k => joinByGap(byLine[k].sort((a, b) => a.x - b.x)))
+      .join(" ").replace(/\s+/g, " ").trim();
+  });
+  return out;
+}
+function parseNivel20Sheet(items){
+  const result = {};
+  const p1 = items.filter(it => it.page === 0);
+  const p2 = items.filter(it => it.page === 1);
+
+  const jugadorCap = findItem(p1, "JUGADOR");
+  if(jugadorCap){
+    const valY = jugadorCap.y + 13.5;
+    const classLevel = collectRow(p1, valY, 6, 150, 250);
+    const background = collectRow(p1, valY, 6, 250, 390);
+    const player = collectRow(p1, valY, 6, 390, 600);
+    if(classLevel){
+      const m = classLevel.match(/^(.*\S)\s+(\d+)\s*$/);
+      if(m){ result.charClass = m[1]; result.level = m[2]; } else { result.charClass = classLevel; }
+    }
+    if(background) result.background = background;
+    if(player) result.player = player;
+  }
+  const alineCap = findItem(p1, "ALINEAMIENTO");
+  if(alineCap){
+    const valY = alineCap.y + 13.5;
+    const name = collectRow(p1, valY, 6, 0, 150);
+    const race = collectRow(p1, valY, 6, 150, 250);
+    const alignment = collectRow(p1, valY, 6, 250, 390);
+    if(name) result.name = name;
+    if(race) result.race = race;
+    if(alignment) result.alignment = alignment;
+  }
+  const caCap = findItem(p1, "CA");
+  if(caCap) result.ac = collectRow(p1, caCap.y + 17.9, 6, caCap.x - 15, caCap.x + 15);
+  const iniCap = findItem(p1, "INICIATIVA");
+  if(iniCap) result.initiative = collectRow(p1, iniCap.y + 17.9, 6, iniCap.x - 15, iniCap.x + 30);
+  const velCap = findItem(p1, "VELOCIDAD");
+  if(velCap) result.speed = collectRow(p1, velCap.y + 16, 6, velCap.x - 15, velCap.x + 25);
+
+  const attrLabels = { fue: "FUERZA", des: "DESTREZA", con: "CONSTITUCIÓN", int: "INTELIGENCIA", sab: "SABIDURÍA", car: "CARISMA" };
+  const attrs = {};
+  Object.keys(attrLabels).forEach(key => {
+    const capItem = p1.find(it => it.text === attrLabels[key]);
+    if(!capItem) return;
+    let best = null, bestDy = Infinity;
+    p1.forEach(it => {
+      if(!/^\d{1,2}$/.test(it.text.trim())) return;
+      const dx = Math.abs(it.x - capItem.x);
+      const dy = capItem.y - it.y;
+      if(dx < 40 && dy > 25 && dy < 55 && dy < bestDy){ bestDy = dy; best = it; }
+    });
+    if(best) attrs[key] = best.text.trim();
+  });
+  if(Object.keys(attrs).length) result.attrs = attrs;
+
+  // Competencias marcadas en salvaciones y habilidades (casilla  de Nivel20:
+  // sin marcar = solo el glifo; marcada = una o más "x" pegadas al glifo).
+  // Se detecta fila a fila en vez de asumir que la "x" viene siempre pegada al
+  // mismo trozo de texto que la etiqueta: según cómo se generó el PDF, el motor
+  // de lectura puede partir "xxPercepción" en 1, 2 o 3 fragmentos distintos.
+  const saveRowLabels = { fue: "Fuerza", des: "Destreza", con: "Constitución", int: "Inteligencia", sab: "Sabiduría", car: "Carisma" };
+  const glyphItems = p1.filter(it => it.text.indexOf("") !== -1);
+  const saveModOverride = {};
+  const saveBonusApplied = {};
+  const skillModOverride = {};
+  const skillBonusApplied = {};
+  glyphItems.forEach(glyphItem => {
+    // fila completa (misma altura), acotada en X para no mezclar columnas vecinas
+    const rowItems = p1.filter(it => Math.abs(it.y - glyphItem.y) < 3 && it.x >= glyphItem.x - 20 && it.x < glyphItem.x + 105);
+    // el número del modificador va aparte; el resto reconstruye la etiqueta
+    const labelItems = rowItems.filter(it => !/^[+-]?\d+$/.test(it.text.trim()));
+    const rawLabel = joinByGap(labelItems.slice().sort((a, b) => a.x - b.x));
+    const cleanLabel = pdfNormLine(rawLabel.replace(/x/g, "").replace(//g, "").trim());
+    const marked = rowItems.some(it => it.x > glyphItem.x - 15 && it.x < glyphItem.x + 3 && /x/.test(it.text));
+    const valItem = rowItems.find(it => /^[+-]?\d+$/.test(it.text.trim()));
+    const value = valItem ? fmtMod(parseInt(valItem.text.trim(), 10)) : null;
+
+    const saveKey = Object.keys(saveRowLabels).find(k => pdfNormLine(saveRowLabels[k]) === cleanLabel);
+    if(saveKey){
+      saveBonusApplied[saveKey] = marked;
+      if(value !== null) saveModOverride[saveKey] = value;
+      return;
+    }
+    const skillDef = skillDefs.find(s => pdfNormLine(s.label) === cleanLabel);
+    if(skillDef){
+      skillBonusApplied[skillDef.key] = marked;
+      if(value !== null) skillModOverride[skillDef.key] = value;
+    }
+  });
+  if(Object.keys(saveModOverride).length) result.saveModOverride = saveModOverride;
+  if(Object.keys(saveBonusApplied).length) result.saveBonusApplied = saveBonusApplied;
+  if(Object.keys(skillModOverride).length) result.skillModOverride = skillModOverride;
+  if(Object.keys(skillBonusApplied).length) result.skillBonusApplied = skillBonusApplied;
+
+  const maxWord = findItem(p1, "MAXIMOS");
+  if(maxWord){
+    const val = collectRow(p1, maxWord.y, 4, maxWord.x + 15, maxWord.x + 90);
+    if(val) result.hpMax = val;
+  }
+  const dadosCap = findItem(p1, "DADOS");
+  if(dadosCap){
+    const val = collectRow(p1, dadosCap.y + 40, 10, dadosCap.x - 20, dadosCap.x + 100);
+    const m = val.match(/(\d+\s*d\s*\d+)/i);
+    if(m) result.hitDice = m[1].replace(/\s+/g, "");
+  }
+
+  Object.assign(result, rightColumnBoxes(p1, [
+    { key: "personality", word: "PERSONALIDAD" },
+    { key: "ideals", word: "IDEALES" },
+    { key: "bonds", word: "VINCULOS" },
+    { key: "flaws", word: "DEFECTOS" }
+  ], 390));
+
+  const histCap = p2.find(it => it.text === "HISTORIA");
+  if(histCap){
+    const rows = p2.filter(it => it.x > 200 && it.y > histCap.y && it.y < histCap.y + 90);
+    const byLine = {};
+    rows.forEach(it => { const key = Math.round(it.y / 3); (byLine[key] = byLine[key] || []).push(it); });
+    result.story = Object.keys(byLine).sort((a, b) => b - a)
+      .map(k => joinByGap(byLine[k].sort((a, b) => a.x - b.x)))
+      .join(" ").replace(/\s+/g, " ").trim();
+  }
+  const notasCap = p2.find(it => it.text === "NOTAS");
+  if(notasCap){
+    const rows = p2.filter(it => it.x < 200 && it.y > notasCap.y && it.y < notasCap.y + 470);
+    const byLine = {};
+    rows.forEach(it => { const key = Math.round(it.y / 3); (byLine[key] = byLine[key] || []).push(it); });
+    result.notes = Object.keys(byLine).sort((a, b) => b - a)
+      .map(k => joinByGap(byLine[k].sort((a, b) => a.x - b.x)))
+      .join(" ").replace(/\s+/g, " ").trim();
+  }
+
+  // rasgos (página 2, marcados con la viñeta \uf0da de Nivel20)
+  const traitsPage = p2;
+  const bullets = traitsPage.filter(it => it.text === "\uf0da").sort((a, b) => b.y - a.y);
+  const rasgosCap = traitsPage.find(it => it.text === "RASGOS");
+  if(bullets.length){
+    const traits = [];
+    bullets.forEach((b, idx) => {
+      const nextY = idx < bullets.length - 1 ? bullets[idx + 1].y : (rasgosCap ? rasgosCap.y : b.y - 40);
+      const rows = traitsPage.filter(it => it.x > 200 && it.y <= b.y && it.y > nextY && it.text !== "\uf0da");
+      const byLine = {};
+      rows.forEach(it => { const key = Math.round(it.y / 3); (byLine[key] = byLine[key] || []).push(it); });
+      const text = Object.keys(byLine).sort((a, b2) => b2 - a)
+        .map(k => joinByGap(byLine[k].sort((a2, b2) => a2.x - b2.x)))
+        .join(" ").replace(/\s+/g, " ").trim();
+      const m = text.match(/^([^:]{2,60}):\s*(.*)$/);
+      if(m) traits.push({ name: m[1].trim(), description: m[2].trim() });
+      else if(text) traits.push({ name: text.slice(0, 40), description: text });
+    });
+    if(traits.length) result.traits = traits;
+  }
+
+  // conjuros (página 3, si existe: cabecera de lanzamiento + tabla)
+  const p3 = items.filter(it => it.page === 2);
+  if(p3.length){
+    const spellcasting = { ability: "", saveDC: "", atkBonus: "", slots: ["", "", "", "", "", "", "", "", ""] };
+    const caractMag = p3.find(it => it.text === "MÁGICA");
+    if(caractMag) spellcasting.ability = collectRow(p3, caractMag.y + 13.5, 6, caractMag.x - 90, caractMag.x + 10);
+    const cdSalv = p3.find(it => it.text === "SALVACIÓN" && it.x < 500);
+    if(cdSalv) spellcasting.saveDC = collectRow(p3, cdSalv.y + 17.9, 6, cdSalv.x - 30, cdSalv.x + 10);
+    const bonifAtk = p3.find(it => it.text === "ATAQUE" && it.x > 500);
+    if(bonifAtk) spellcasting.atkBonus = collectRow(p3, bonifAtk.y + 17.9, 6, bonifAtk.x - 20, bonifAtk.x + 20);
+
+    const nivelLabels = p3.filter(it => it.text === "NIVEL");
+    nivelLabels.forEach(labelItem => {
+      const digitItem = p3.find(it => /^\d$/.test(it.text) && Math.abs(it.y - labelItem.y) < 3 && it.x > labelItem.x && it.x < labelItem.x + 30);
+      if(!digitItem) return;
+      const lvl = parseInt(digitItem.text, 10);
+      const val = collectRow(p3, digitItem.y - 11, 6, digitItem.x - 15, digitItem.x + 20);
+      if(/^\d+$/.test(val)) spellcasting.slots[lvl - 1] = val;
+    });
+    if(spellcasting.ability || spellcasting.saveDC || spellcasting.atkBonus || spellcasting.slots.some(s => s)){
+      result.spellcasting = spellcasting;
+    }
+
+    const headerNombre = p3.find(it => it.text === "NOMBRE" && it.x < 100);
+    if(headerNombre){
+      const headerY = headerNombre.y;
+      const rowMarkers = p3.filter(it => it.x > 30 && it.x < 65 && it.y < headerY - 5 &&
+        (/^\d$/.test(it.text) || it.text === "Truco")).sort((a, b) => b.y - a.y);
+      const spells = [];
+      rowMarkers.forEach(marker => {
+        const sameRow = it => Math.abs(it.y - marker.y) <= 3;
+        const nombre = joinByGap(p3.filter(it => it.x >= 68 && it.x < 168 && sameRow(it)).sort((a, b) => a.x - b.x)).trim();
+        const escuela = joinByGap(p3.filter(it => it.x >= 168 && it.x < 258 && sameRow(it)).sort((a, b) => a.x - b.x)).trim();
+        const alcance = joinByGap(p3.filter(it => it.x >= 478 && it.x < 530 && sameRow(it)).sort((a, b) => a.x - b.x)).trim();
+        if(nombre && !/^(NIVEL|TRUCOS|CONJUROS|\d+)/.test(nombre)){
+          spells.push({ name: nombre, level: marker.text === "Truco" ? "Truco" : marker.text, school: escuela, range: alcance, description: "" });
+        }
+      });
+      if(spells.length) result.spells = spells;
+    }
+  }
+
+  Object.keys(result).forEach(k => { if(result[k] === "") delete result[k]; });
+  return result;
+}
+
+function mod(score){ return Math.floor(((Number(score) || 10) - 10) / 2); }
+function fmtMod(m){ return (m >= 0 ? "+" : "") + m; }
+function profBonus(level){ const l = Math.max(1, Number(level) || 1); return Math.floor((l - 1) / 4) + 2; }
+function derivedMod(char, attrKey, tier){
+  if(!hasVal(char.attrs[attrKey])) return "—";
+  return fmtMod(mod(char.attrs[attrKey]) + (Number(tier) || 0) * profBonus(char.level));
+}
+function passiveVal(char){
+  if(!hasVal(char.attrs.sab)) return "—";
+  const percOverride = char.skillModOverride ? char.skillModOverride.percepcion : null;
+  const percMod = hasVal(percOverride) ? parseInt(percOverride, 10) || 0 : mod(char.attrs.sab);
+  return 10 + percMod;
+}
+function pct(current, max){
+  const c = Number(current) || 0;
+  const m = Number(max) || 0;
+  if(m <= 0) return 0;
+  return Math.max(0, Math.min(100, (c / m) * 100));
+}
+
+// --- characters ---
+function blankCharacter(id){
+  return {
+    id, player: "", name: "",
+    race: "", charClass: "", background: "", alignment: "",
+    level: "", xp: "", xpNext: "",
+    ac: "", initiative: "", speed: "", hitDice: "",
+    hp: "", hpMax: "", hpTemp: "",
+    deathSaves: { success: 0, fail: 0 },
+    attrs: { fue: "", des: "", con: "", int: "", sab: "", car: "" },
+    saveProf: { fue: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
+    saveModOverride: {},
+    skillModOverride: {},
+    saveBonusApplied: {},
+    skillBonusApplied: {},
+    skillProf: {},
+    attacks: [],
+    inventory: [],
+    traits: [],
+    spellcasting: { ability: "", saveDC: "", atkBonus: "", slots: ["", "", "", "", "", "", "", "", ""] },
+    spells: [],
+    personality: "", ideals: "", bonds: "", flaws: "",
+    story: "", goal: "", town: "", notes: "",
+    reputations: []
+  };
+}
+// Rellena con valores por defecto cualquier campo que falte (para partidas guardadas
+// antes de que existiera la ficha completa) sin tocar los datos ya existentes.
+function normalizeCharacter(char){
+  const blank = blankCharacter(char.id);
+  const merged = Object.assign({}, blank, char);
+  merged.attrs = Object.assign({}, blank.attrs, char.attrs || {});
+  merged.saveProf = Object.assign({}, blank.saveProf, char.saveProf || {});
+  merged.skillProf = Object.assign({}, blank.skillProf, char.skillProf || {});
+  // partidas antiguas guardaban esto como true/false; lo pasamos a 0/1 (2 = pericia, nuevo)
+  Object.keys(merged.saveProf).forEach(k => { merged.saveProf[k] = merged.saveProf[k] === true ? 1 : (Number(merged.saveProf[k]) || 0); });
+  Object.keys(merged.skillProf).forEach(k => { merged.skillProf[k] = merged.skillProf[k] === true ? 1 : (Number(merged.skillProf[k]) || 0); });
+  merged.saveModOverride = Object.assign({}, char.saveModOverride || {});
+  merged.skillModOverride = Object.assign({}, char.skillModOverride || {});
+  merged.saveBonusApplied = Object.assign({}, char.saveBonusApplied || {});
+  merged.skillBonusApplied = Object.assign({}, char.skillBonusApplied || {});
+  merged.deathSaves = Object.assign({}, blank.deathSaves, char.deathSaves || {});
+  merged.inventory = char.inventory || [];
+  merged.attacks = char.attacks || [];
+  merged.reputations = char.reputations || [];
+  merged.traits = char.traits || [];
+  merged.spells = char.spells || [];
+  merged.spellcasting = Object.assign({}, blank.spellcasting, char.spellcasting || {});
+  merged.spellcasting.slots = (char.spellcasting && char.spellcasting.slots && char.spellcasting.slots.length === 9)
+    ? char.spellcasting.slots : blank.spellcasting.slots.slice();
+  return merged;
+}
+function addCharacter(data){
+  const id = "char-" + (charSeq++);
+  const char = normalizeCharacter(Object.assign({ id }, data || {}));
+  state.characters.push(char);
+  renderCharacters();
+}
+function removeCharacter(id){
+  state.characters = state.characters.filter(c => c.id !== id);
+  renderCharacters();
+}
+
+// --- resumen de sesiones ---
+function removeSession(id){
+  state.sessions = state.sessions.filter(s => s.id !== id);
+  renderSessions();
+}
+function buildSessionCard(session, committedInitially){
+  let committed = committedInitially;
+  const card = document.createElement("div");
+  card.className = "card session-card";
+  card.innerHTML = `
+    <div class="char-head">
+      <p class="eyebrow">${committed ? "resumen de sesión" : "nueva sesión"}</p>
+      ${committed ? '<button class="remove-btn" type="button">quitar</button>' : ""}
+    </div>
+    <div class="identity-row">
+      <div><label>Título de la sesión</label><input type="text" data-s-field="title" value="${escapeHtml(session.title)}" placeholder="Ej. Sesión 0 — la celda"></div>
+      <div><label>Fecha</label><input type="text" data-s-field="date" value="${escapeHtml(session.date)}" placeholder="Ej. 21 de septiembre"></div>
+    </div>
+    <label>Qué pasó</label>
+    <textarea data-s-field="text" placeholder="Decisiones importantes, quién murió, cómo quedó todo al terminar...">${escapeHtml(session.text)}</textarea>
+  `;
+  const wireRemove = () => {
+    const btn = card.querySelector(".remove-btn");
+    if(btn) btn.addEventListener("click", () => removeSession(session.id));
+  };
+  wireRemove();
+  card.querySelectorAll("[data-s-field]").forEach(el => {
+    el.addEventListener("input", () => {
+      session[el.dataset.sField] = el.value;
+      if(!committed){
+        committed = true;
+        state.sessions.push(session);
+        sessionSeq++;
+        const head = card.querySelector(".char-head");
+        head.querySelector(".eyebrow").textContent = "resumen de sesión";
+        const btn = document.createElement("button");
+        btn.className = "remove-btn";
+        btn.type = "button";
+        btn.textContent = "quitar";
+        btn.addEventListener("click", () => removeSession(session.id));
+        head.appendChild(btn);
+        appendDraftCard();
+      }
+    });
+  });
+  return card;
+}
+function appendDraftCard(){
+  const wrap = document.getElementById("sessionList");
+  const draft = { id: "session-" + sessionSeq, title: "", date: "", text: "" };
+  wrap.appendChild(buildSessionCard(draft, false));
+}
+function renderSessions(){
+  const wrap = document.getElementById("sessionList");
+  wrap.innerHTML = "";
+  state.sessions.forEach(session => {
+    wrap.appendChild(buildSessionCard(session, true));
+  });
+  appendDraftCard();
+}
+
+// --- NPCs del máster ---
+function removeNpc(id){
+  state.npcs = state.npcs.filter(n => n.id !== id);
+  renderNpcs();
+}
+function addNpc(data){
+  const id = "npc-" + (npcSeq++);
+  const npc = Object.assign({ name: "", description: "", story: "" }, data || {}, { id });
+  state.npcs.push(npc);
+  renderNpcs();
+}
+function truncate(str, n){
+  str = str || "";
+  return str.length > n ? str.slice(0, n).trim() + "…" : str;
+}
+function npcSummaryText(npc){
+  return npc.description ? truncate(npc.description, 70) : "sin descripción todavía";
+}
+function buildNpcCard(npc, committedInitially){
+  let committed = committedInitially;
+  const startsHidden = committed && hasVal(npc.name);
+  const card = document.createElement("div");
+  card.className = "card npc-card";
+  card.innerHTML = `
+    <div class="char-head">
+      <p class="eyebrow">${committed ? "NPC" : "nuevo NPC"}</p>
+      ${committed ? '<button class="remove-btn" type="button">quitar</button>' : ""}
+    </div>
+    ${committed ? `<p class="npc-name-display" data-npc-name-display>${escapeHtml(npc.name) || "(sin nombre)"}</p>
+    <p class="compact-summary" data-npc-summary>${npcSummaryText(npc)}</p>
+    <button class="ctrl-btn" type="button" data-toggle-npc>${startsHidden ? "ver detalles" : "ocultar detalles"}</button>` : ""}    <div class="sheet-body" ${startsHidden ? "hidden" : ""}>
+      <label>Nombre</label>
+      <input type="text" data-npc-field="name" value="${escapeHtml(npc.name)}" placeholder="Ej. José Carlos, el carcelero">
+      <label>Descripción</label>
+      <textarea data-npc-field="description" placeholder="Aspecto, forma de hablar, manías, qué quiere de verdad...">${escapeHtml(npc.description)}</textarea>
+      <label>Microhistoria (cómo va evolucionando)</label>
+      <textarea data-npc-field="story" placeholder="Apunta aquí cómo se va desarrollando este personaje, partida a partida, para poder retomarlo en la mesa">${escapeHtml(npc.story)}</textarea>
+    </div>
+  `;
+  const toggleNpcBtn = card.querySelector("[data-toggle-npc]");
+  if(toggleNpcBtn){
+    toggleNpcBtn.addEventListener("click", () => {
+      const body = card.querySelector(".sheet-body");
+      body.hidden = !body.hidden;
+      toggleNpcBtn.textContent = body.hidden ? "ver detalles" : "ocultar detalles";
+    });
+  }
+  const wireRemove = () => {
+    const btn = card.querySelector(".remove-btn");
+    if(btn) btn.addEventListener("click", () => removeNpc(npc.id));
+  };
+  wireRemove();
+  card.querySelectorAll("[data-npc-field]").forEach(el => {
+    el.addEventListener("input", () => {
+      npc[el.dataset.npcField] = el.value;
+      if(!committed){
+        committed = true;
+        state.npcs.push(npc);
+        npcSeq++;
+        const head = card.querySelector(".char-head");
+        head.querySelector(".eyebrow").textContent = "NPC";
+        const btn = document.createElement("button");
+        btn.className = "remove-btn";
+        btn.type = "button";
+        btn.textContent = "quitar";
+        btn.addEventListener("click", () => removeNpc(npc.id));
+        head.appendChild(btn);
+
+        const body = card.querySelector(".sheet-body");
+        const displayName = document.createElement("p");
+        displayName.className = "npc-name-display";
+        displayName.setAttribute("data-npc-name-display", "");
+        const summary = document.createElement("p");
+        summary.className = "compact-summary";
+        summary.setAttribute("data-npc-summary", "");
+        const toggleNewBtn = document.createElement("button");
+        toggleNewBtn.className = "ctrl-btn";
+        toggleNewBtn.type = "button";
+        toggleNewBtn.textContent = "ocultar detalles";
+        toggleNewBtn.addEventListener("click", () => {
+          body.hidden = !body.hidden;
+          toggleNewBtn.textContent = body.hidden ? "ver detalles" : "ocultar detalles";
+        });
+        card.insertBefore(toggleNewBtn, body);
+        card.insertBefore(summary, toggleNewBtn);
+        card.insertBefore(displayName, summary);
+
+        appendDraftNpcCard();
+      }
+      const nameDisp = card.querySelector("[data-npc-name-display]");
+      if(nameDisp) nameDisp.textContent = npc.name || "(sin nombre)";
+      const summaryDisp = card.querySelector("[data-npc-summary]");
+      if(summaryDisp) summaryDisp.textContent = npcSummaryText(npc);
+    });
+  });
+  return card;
+}
+function appendDraftNpcCard(){
+  const wrap = document.getElementById("npcList");
+  const draft = { id: "npc-" + npcSeq, name: "", description: "", story: "" };
+  wrap.appendChild(buildNpcCard(draft, false));
+}
+function renderNpcs(){
+  const wrap = document.getElementById("npcList");
+  wrap.innerHTML = "";
+  state.npcs.forEach(npc => wrap.appendChild(buildNpcCard(npc, true)));
+  appendDraftNpcCard();
+}
+
+// --- subtrama de los malos (casos al azar sin repetir) ---
+function addVillainCase(){
+  state.villainCases.push({ id: "vc-" + (villainSeq++), text: "", resolved: false });
+  renderVillainCases();
+}
+function removeVillainCase(id){
+  state.villainCases = state.villainCases.filter(c => c.id !== id);
+  renderVillainCases();
+}
+function renderVillainCases(){
+  const wrap = document.getElementById("villainCaseList");
+  wrap.innerHTML = "";
+  if(state.villainCases.length === 0){
+    wrap.innerHTML = '<p class="inv-empty">Todavía no hay casos. Añade el primero.</p>';
+    return;
+  }
+  state.villainCases.forEach(c => {
+    const row = document.createElement("div");
+    row.className = "villain-case-row" + (c.resolved ? " resolved" : "");
+    row.innerHTML = `
+      <textarea placeholder="Describe el caso (qué hacen los malos, qué se mueve de fondo...)">${escapeHtml(c.text)}</textarea>
+      <div class="vc-controls">
+        <button type="button" class="vc-toggle">${c.resolved ? "marcar sin usar" : "marcar usado"}</button>
+        <button type="button" class="vc-remove">quitar</button>
+      </div>
+    `;
+    row.querySelector("textarea").addEventListener("input", e => { c.text = e.target.value; });
+    row.querySelector(".vc-toggle").addEventListener("click", () => { c.resolved = !c.resolved; renderVillainCases(); });
+    row.querySelector(".vc-remove").addEventListener("click", () => removeVillainCase(c.id));
+    wrap.appendChild(row);
+  });
+}
+function rollVillainCase(){
+  const out = document.getElementById("villainCaseResult");
+  const pool = state.villainCases.filter(c => !c.resolved && c.text.trim());
+  if(pool.length === 0){
+    out.innerHTML = '<div class="villain-case-result"><p class="body-text" style="margin:0;">No quedan casos sin usar (o los que hay están vacíos). Añade más casos o reinicia la lista.</p></div>';
+    return;
+  }
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  out.innerHTML = `
+    <div class="villain-case-result">
+      <p class="eyebrow">caso elegido · quedan ${pool.length - 1} sin usar</p>
+      <p class="body-text" style="margin:0 0 12px;">${escapeHtml(chosen.text)}</p>
+      <button type="button" class="ctrl-btn" id="markChosenVillainCase">marcar como usado</button>
+    </div>`;
+  document.getElementById("markChosenVillainCase").addEventListener("click", () => {
+    chosen.resolved = true;
+    renderVillainCases();
+    out.innerHTML = "";
+  });
+}
+
+// --- dado de castigos ---
+function renderPunishmentList(){
+  const wrap = document.getElementById("punishmentList");
+  wrap.innerHTML = "";
+  for(let i = 0; i < 20; i++){
+    const row = document.createElement("div");
+    row.className = "punishment-row";
+    row.innerHTML = `<label>${i + 1}.</label><textarea data-p-index="${i}" placeholder="Ej. Le arden las manos hasta el final de la escena">${escapeHtml(state.punishments[i] || "")}</textarea>`;
+    wrap.appendChild(row);
+  }
+  wrap.querySelectorAll("[data-p-index]").forEach(el => {
+    el.addEventListener("input", () => {
+      state.punishments[Number(el.dataset.pIndex)] = el.value;
+    });
+  });
+}
+function runStoryPunishmentRoll(el){
+  let ticks = 0;
+  const timer = setInterval(() => {
+    el.textContent = "tirando... (" + (1 + Math.floor(Math.random() * 20)) + ")";
+    ticks++;
+    if(ticks > 10){
+      clearInterval(timer);
+      const final = 1 + Math.floor(Math.random() * 20);
+      const custom = (state.punishments[final - 1] || "").trim();
+      el.innerHTML = "<strong>Castigo nº " + final + "</strong> — " +
+        (custom ? escapeHtml(custom) : "(todavía no has escrito este castigo — ve a la pestaña Castigos para definirlo)");
+    }
+  }, 60);
+}
+function rollPunishment(){
+  const shapeNum = document.getElementById("punishmentShapeNum");
+  const label = document.getElementById("punishmentResultLabel");
+  const text = document.getElementById("punishmentResultText");
+  const actions = document.getElementById("punishmentActions");
+  document.getElementById("punishmentEditBox").hidden = true;
+  let ticks = 0;
+  const timer = setInterval(() => {
+    shapeNum.textContent = 1 + Math.floor(Math.random() * 20);
+    ticks++;
+    if(ticks > 14){
+      clearInterval(timer);
+      const final = 1 + Math.floor(Math.random() * 20);
+      shapeNum.textContent = final;
+      lastRolledPunishment = final - 1;
+      label.textContent = "Castigo nº " + final;
+      const custom = (state.punishments[lastRolledPunishment] || "").trim();
+      text.textContent = custom || "(todavía no has escrito este castigo — defínelo en la tabla de abajo)";
+      actions.hidden = false;
+    }
+  }, 45);
+}
+function syncPunishmentRow(index){
+  const row = document.querySelector('#punishmentList [data-p-index="' + index + '"]');
+  if(row) row.value = state.punishments[index] || "";
+}
+function refreshPunishmentResultText(){
+  const text = document.getElementById("punishmentResultText");
+  const custom = (state.punishments[lastRolledPunishment] || "").trim();
+  text.textContent = custom || "(todavía no has escrito este castigo — defínelo en la tabla de abajo)";
+}
+
+function addReputation(charId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  if(!char.reputations) char.reputations = [];
+  char.reputations.push({ id: "rep-" + (repSeq++), town: "", standing: "neutral", notes: "" });
+  renderCharacters();
+}
+function removeReputation(charId, repId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  char.reputations = char.reputations.filter(r => r.id !== repId);
+  renderCharacters();
+}
+function addInventoryItem(charId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  if(!char.inventory) char.inventory = [];
+  char.inventory.push({ id: "inv-" + (invSeq++), name: "", damage: "", modifiers: "", notes: "", status: "possess", recoverCondition: "" });
+  renderCharacters();
+}
+function removeInventoryItem(charId, itemId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  char.inventory = char.inventory.filter(it => it.id !== itemId);
+  renderCharacters();
+}
+function addAttack(charId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  if(!char.attacks) char.attacks = [];
+  char.attacks.push({ id: "atk-" + (atkSeq++), name: "", bonus: "", damage: "" });
+  renderCharacters();
+}
+function removeAttack(charId, atkId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  char.attacks = char.attacks.filter(a => a.id !== atkId);
+  renderCharacters();
+}
+
+function addTrait(charId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  if(!char.traits) char.traits = [];
+  char.traits.push({ id: "trait-" + (traitSeq++), name: "", description: "" });
+  renderCharacters();
+}
+function removeTrait(charId, traitId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  char.traits = char.traits.filter(t => t.id !== traitId);
+  renderCharacters();
+}
+function addSpell(charId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  if(!char.spells) char.spells = [];
+  char.spells.push({ id: "spell-" + (spellSeq++), name: "", level: "", school: "", range: "", description: "" });
+  renderCharacters();
+}
+function removeSpell(charId, spellId){
+  const char = state.characters.find(c => c.id === charId);
+  if(!char) return;
+  char.spells = char.spells.filter(s => s.id !== spellId);
+  renderCharacters();
+}
+
+function renderCharacters(){
+  const wrap = document.getElementById("charList");
+  wrap.innerHTML = "";
+  state.characters.forEach(char => {
+    const card = document.createElement("div");
+    card.className = "card char-card";
+    card.innerHTML = `
+      <div class="class-watermark" data-class-watermark>${getClassIcon(char.charClass)}</div>
+      <div class="sheet-header">
+        <div class="names">
+          <p class="eyebrow">hoja de personaje</p>
+          <div class="identity-row">
+            <div>
+              <label>Jugador</label>
+              <input type="text" data-field="player" value="${escapeHtml(char.player)}" placeholder="Nombre del jugador">
+            </div>
+            <div>
+              <label>Personaje</label>
+              <input type="text" data-field="name" value="${escapeHtml(char.name)}" placeholder="Nombre del personaje">
+            </div>
+          </div>
+          <p class="compact-summary" data-compact-summary>${compactSummaryText(char)}</p>
+        </div>
+        <div class="level-badge" title="Nivel">Nv ${hasVal(char.level) ? char.level : "—"}</div>
+      </div>
+
+      <div class="char-head" style="margin-top:10px;">
+        <button class="ctrl-btn" type="button" data-toggle-sheet>${hasVal(char.name) ? "ver ficha completa" : "ocultar detalles"}</button>
+        <button class="remove-btn" data-id="${char.id}">quitar personaje</button>
+      </div>
+
+      <div class="sheet-body" ${hasVal(char.name) ? "hidden" : ""}>
+
+      <div class="sheet-section">
+        <p class="eyebrow">identidad</p>
+        <div class="id-grid">
+          <div><label>Raza</label><input type="text" data-field="race" value="${escapeHtml(char.race)}" placeholder="Ej. Enano, Elfo..."></div>
+          <div><label>Clase <span class="class-icon-inline" data-class-icon-inline>${getClassIcon(char.charClass)}</span></label><input type="text" data-field="charClass" value="${escapeHtml(char.charClass)}" placeholder="Ej. Guerrero, Pícaro..."></div>
+          <div><label>Trasfondo</label><input type="text" data-field="background" value="${escapeHtml(char.background)}" placeholder="Ej. Soldado, Forastero..."></div>
+          <div><label>Alineamiento</label><input type="text" data-field="alignment" value="${escapeHtml(char.alignment)}" placeholder="Ej. Neutral bueno..."></div>
+        </div>
+        <div class="gauge-row" style="margin-top:12px;">
+          <label>Nivel</label>
+          <div class="gauge-inputs"><input type="number" data-field="level" value="${char.level}" min="1"></div>
+        </div>
+        <div class="gauge-row">
+          <label>XP</label>
+          <div class="gauge-inputs">
+            <input type="number" data-field="xp" value="${char.xp}" min="0">
+            <span class="gauge-sep">/</span>
+            <input type="number" data-field="xpNext" value="${char.xpNext}" min="1">
+          </div>
+          <div class="bar-track"><div class="bar-fill xp-fill" style="width:${pct(char.xp, char.xpNext)}%"></div></div>
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <p class="eyebrow">combate</p>
+        <div class="mini-grid">
+          <div class="mini-item"><label>CA</label><input type="number" data-field="ac" value="${char.ac}"></div>
+          <div class="mini-item"><label>Iniciativa</label><input type="text" data-field="initiative" value="${char.initiative}"></div>
+          <div class="mini-item"><label>Velocidad</label><input type="number" data-field="speed" value="${char.speed}"></div>
+          <div class="mini-item readonly"><label>Competencia</label><div class="static-val prof-static">${hasVal(char.level) ? fmtMod(profBonus(char.level)) : "—"}</div></div>
+        </div>
+        <div class="gauge-row" style="margin-top:12px;">
+          <label>Vida</label>
+          <div class="gauge-inputs">
+            <input type="number" data-field="hp" value="${char.hp}" min="0">
+            <span class="gauge-sep">/</span>
+            <input type="number" data-field="hpMax" value="${char.hpMax}" min="1">
+            <span class="gauge-sep">+</span>
+            <input type="number" data-field="hpTemp" value="${char.hpTemp}" min="0" title="Vida temporal">
+          </div>
+          <div class="bar-track"><div class="bar-fill hp hp-fill" style="width:${pct(char.hp, char.hpMax)}%"></div></div>
+        </div>
+        <div class="gauge-row">
+          <label>Dado golpe</label>
+          <div class="gauge-inputs" style="width:100%;">
+            <input type="text" data-field="hitDice" value="${escapeHtml(char.hitDice)}" placeholder="Ej. 1d8" style="width:80px; text-align:center; background:var(--stone-2); border:1px solid var(--border); border-radius:3px; color:var(--ink); padding:8px 6px;">
+          </div>
+        </div>
+        <div class="death-row">
+          <label>Salv. muerte</label>
+          <span style="font-size:11px; color:var(--ink-dim);">éxitos</span>
+          <div class="death-dots" data-kind="success">
+            ${[1,2,3].map(n => `<button type="button" class="death-dot success ${n <= (char.deathSaves.success||0) ? 'filled' : ''}" data-n="${n}"></button>`).join("")}
+          </div>
+          <span style="font-size:11px; color:var(--ink-dim);">fallos</span>
+          <div class="death-dots" data-kind="fail">
+            ${[1,2,3].map(n => `<button type="button" class="death-dot fail ${n <= (char.deathSaves.fail||0) ? 'filled' : ''}" data-n="${n}"></button>`).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <p class="eyebrow">atributos</p>
+        <div class="stat-grid">
+          ${Object.keys(attrLabels).map(k => `
+            <div class="stat-item">
+              <label>${attrLabels[k]}</label>
+              <div class="mod" data-mod-for="${k}">${hasVal(char.attrs[k]) ? fmtMod(mod(char.attrs[k])) : "—"}</div>
+              <div class="score-circle">
+                <input type="number" data-attr="${k}" value="${char.attrs[k]}">
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <details class="sheet-details">
+        <summary>salvaciones y habilidades</summary>
+        <div class="details-body">
+          <div class="two-col">
+            <div>
+              <p class="prof-heading">tiradas de salvación</p>
+              <div class="prof-list">
+                ${Object.keys(attrLabels).map(k => `
+                  <div class="prof-row">
+                    <span class="prof-label">${attrLabels[k]}</span>
+                    <button type="button" class="add-prof-btn${char.saveBonusApplied[k] ? " active" : ""}" data-save-add="${k}" title="Activa/desactiva la competencia (suma o resta el bonificador una sola vez)">${char.saveBonusApplied[k] ? "✓ comp." : "+" + profBonus(char.level)}</button>
+                    <span class="prof-mod"><input type="text" class="prof-mod-input" data-save-mod="${k}" value="${hasVal(char.saveModOverride[k]) ? char.saveModOverride[k] : derivedMod(char, k, 0)}"></span>
+                  </div>
+                `).join("")}
+              </div>
+              <p class="passive-note">Percepción pasiva: <span data-passive-perception>${passiveVal(char)}</span></p>
+            </div>
+            <div>
+              <p class="prof-heading">habilidades</p>
+              <div class="prof-list">
+                ${skillDefs.map(s => `
+                  <div class="prof-row">
+                    <span class="prof-label">${s.label} <span style="color:var(--ink-dim); font-size:11px;">(${attrLabels[s.attr]})</span></span>
+                    <button type="button" class="add-prof-btn${char.skillBonusApplied[s.key] ? " active" : ""}" data-skill-add="${s.key}" title="Activa/desactiva la competencia (suma o resta el bonificador una sola vez)">${char.skillBonusApplied[s.key] ? "✓ comp." : "+" + profBonus(char.level)}</button>
+                    <span class="prof-mod"><input type="text" class="prof-mod-input" data-skill-mod="${s.key}" value="${hasVal(char.skillModOverride[s.key]) ? char.skillModOverride[s.key] : derivedMod(char, s.attr, 0)}"></span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="sheet-details">
+        <summary>ataques</summary>
+        <div class="details-body">
+          <div class="attack-head"><span>nombre</span><span>bonif.</span><span>daño/tipo</span><span></span></div>
+          <div class="attack-list"></div>
+          <button class="add-atk-btn" type="button">+ añadir ataque</button>
+        </div>
+      </details>
+
+      <details class="sheet-details">
+        <summary>rasgos</summary>
+        <div class="details-body">
+          <div class="trait-list"></div>
+          <button class="add-trait-btn" type="button">+ añadir rasgo</button>
+        </div>
+      </details>
+
+      <details class="sheet-details">
+        <summary>conjuros</summary>
+        <div class="details-body">
+          <div class="spell-header-grid">
+            <div><label>Característica mágica</label><input type="text" data-spellcast="ability" placeholder="Carisma"></div>
+            <div><label>CD de salvación</label><input type="text" data-spellcast="saveDC" placeholder="14"></div>
+            <div><label>Bonif. ataque conjuros</label><input type="text" data-spellcast="atkBonus" placeholder="+6"></div>
+          </div>
+          <p class="eyebrow" style="margin-top:14px;">espacios de conjuro por nivel</p>
+          <div class="spell-slots-grid"></div>
+          <p class="eyebrow" style="margin-top:14px;">lista de conjuros</p>
+          <div class="spell-list"></div>
+          <button class="add-spell-btn" type="button">+ añadir conjuro</button>
+        </div>
+      </details>
+
+      <div class="sheet-section">
+        <p class="eyebrow">inventario y equipo</p>
+        <div class="inv-list"></div>
+        <button class="add-inv-btn" type="button">+ añadir objeto</button>
+      </div>
+
+      <details class="sheet-details">
+        <summary>rasgos de personalidad</summary>
+        <div class="details-body">
+          <label>Rasgos de personalidad</label>
+          <textarea data-field="personality" placeholder="Cómo se comporta, manías, forma de hablar...">${escapeHtml(char.personality)}</textarea>
+          <label>Ideales</label>
+          <textarea data-field="ideals" placeholder="En qué cree, qué le mueve...">${escapeHtml(char.ideals)}</textarea>
+          <label>Vínculos</label>
+          <textarea data-field="bonds" placeholder="Personas, lugares o cosas importantes para él...">${escapeHtml(char.bonds)}</textarea>
+          <label>Defectos</label>
+          <textarea data-field="flaws" placeholder="Su punto débil, algo que puede traicionarle...">${escapeHtml(char.flaws)}</textarea>
+        </div>
+      </details>
+
+      <div class="sheet-section">
+        <p class="eyebrow">historia y rol</p>
+        <label>Historia / delito</label>
+        <textarea data-field="story" placeholder="Por qué está en la prisión, quién es...">${escapeHtml(char.story)}</textarea>
+        <label>Qué busca</label>
+        <textarea data-field="goal" placeholder="Su objetivo o motivación...">${escapeHtml(char.goal)}</textarea>
+        <label>Relación con el pueblo</label>
+        <textarea data-field="town" placeholder="Cómo lo ve el pueblo, vínculos, reputación...">${escapeHtml(char.town)}</textarea>
+        <label>Notas de progreso</label>
+        <textarea data-field="notes" placeholder="Cómo va evolucionando, sesión a sesión...">${escapeHtml(char.notes)}</textarea>
+      </div>
+
+      <div class="rep-section">
+        <p class="eyebrow">reputación por pueblo</p>
+        <div class="rep-list"></div>
+        <button class="add-rep-btn" type="button">+ añadir pueblo</button>
+      </div>
+      </div>
+    `;
+
+    // campos simples (texto y numéricos de primer nivel)
+    card.querySelectorAll("[data-field]").forEach(el => {
+      el.addEventListener("input", () => {
+        char[el.dataset.field] = el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value;
+        if(["xp","xpNext"].includes(el.dataset.field)){
+          card.querySelector(".xp-fill").style.width = pct(char.xp, char.xpNext) + "%";
+        }
+        if(["hp","hpMax"].includes(el.dataset.field)){
+          card.querySelector(".hp-fill").style.width = pct(char.hp, char.hpMax) + "%";
+        }
+        if(el.dataset.field === "level"){
+          card.querySelector(".level-badge").textContent = "Nv " + (hasVal(char.level) ? char.level : "—");
+          card.querySelector(".prof-static").textContent = hasVal(char.level) ? fmtMod(profBonus(char.level)) : "—";
+          refreshDerivedMods(card, char);
+        }
+        if(el.dataset.field === "charClass"){
+          const icon = getClassIcon(char.charClass);
+          card.querySelector("[data-class-watermark]").textContent = icon;
+          card.querySelector("[data-class-icon-inline]").textContent = icon;
+        }
+        card.querySelector("[data-compact-summary]").textContent = compactSummaryText(char);
+      });
+    });
+    const toggleBtn = card.querySelector("[data-toggle-sheet]");
+    const sheetBody = card.querySelector(".sheet-body");
+    toggleBtn.addEventListener("click", () => {
+      sheetBody.hidden = !sheetBody.hidden;
+      toggleBtn.textContent = sheetBody.hidden ? "ver ficha completa" : "ocultar detalles";
+    });
+    // atributos (anidados en char.attrs)
+    card.querySelectorAll("[data-attr]").forEach(el => {
+      el.addEventListener("input", () => {
+        char.attrs[el.dataset.attr] = el.value === "" ? "" : Number(el.value);
+        card.querySelector(`[data-mod-for="${el.dataset.attr}"]`).textContent = hasVal(char.attrs[el.dataset.attr]) ? fmtMod(mod(char.attrs[el.dataset.attr])) : "—";
+        refreshDerivedMods(card, char);
+      });
+    });
+    // salvaciones
+    card.querySelectorAll("[data-save-add]").forEach(el => {
+      el.addEventListener("click", () => {
+        const k = el.dataset.saveAdd;
+        const pb = profBonus(char.level);
+        const input = card.querySelector(`[data-save-mod="${k}"]`);
+        let val = parseInt(input.value, 10);
+        if(isNaN(val)) val = 0;
+        const turningOn = !char.saveBonusApplied[k];
+        val += turningOn ? pb : -pb;
+        char.saveBonusApplied[k] = turningOn;
+        input.value = fmtMod(val);
+        char.saveModOverride[k] = input.value;
+        el.classList.toggle("active", turningOn);
+        el.textContent = turningOn ? "✓ comp." : "+" + pb;
+      });
+    });
+    // habilidades
+    card.querySelectorAll("[data-skill-add]").forEach(el => {
+      el.addEventListener("click", () => {
+        const k = el.dataset.skillAdd;
+        const pb = profBonus(char.level);
+        const input = card.querySelector(`[data-skill-mod="${k}"]`);
+        let val = parseInt(input.value, 10);
+        if(isNaN(val)) val = 0;
+        const turningOn = !char.skillBonusApplied[k];
+        val += turningOn ? pb : -pb;
+        char.skillBonusApplied[k] = turningOn;
+        input.value = fmtMod(val);
+        char.skillModOverride[k] = input.value;
+        el.classList.toggle("active", turningOn);
+        el.textContent = turningOn ? "✓ comp." : "+" + pb;
+        if(k === "percepcion"){
+          const passive = card.querySelector("[data-passive-perception]");
+          if(passive) passive.textContent = passiveVal(char);
+        }
+      });
+    });
+    // valores manuales de salvación/habilidad (por si quieres forzar un número, ej. Pericia)
+    card.querySelectorAll("[data-save-mod]").forEach(el => {
+      el.addEventListener("input", () => { char.saveModOverride[el.dataset.saveMod] = el.value; });
+    });
+    card.querySelectorAll("[data-skill-mod]").forEach(el => {
+      el.addEventListener("input", () => {
+        char.skillModOverride[el.dataset.skillMod] = el.value;
+        if(el.dataset.skillMod === "percepcion"){
+          const passive = card.querySelector("[data-passive-perception]");
+          if(passive) passive.textContent = passiveVal(char);
+        }
+      });
+    });
+    // salvación de muerte
+    card.querySelectorAll(".death-dot").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const kind = btn.parentElement.dataset.kind;
+        const n = Number(btn.dataset.n);
+        char.deathSaves[kind] = (char.deathSaves[kind] === n) ? n - 1 : n;
+        card.querySelectorAll(`.death-dots[data-kind="${kind}"] .death-dot`).forEach(d => {
+          d.classList.toggle("filled", Number(d.dataset.n) <= char.deathSaves[kind]);
+        });
+      });
+    });
+    card.querySelector(".remove-btn").addEventListener("click", () => removeCharacter(char.id));
+
+    // inventario
+    const invList = card.querySelector(".inv-list");
+    const inventory = char.inventory || [];
+    if(inventory.length === 0){
+      invList.innerHTML = '<p class="inv-empty">Sin objetos todavía.</p>';
+    } else {
+      inventory.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "inv-entry-full status-" + (item.status || "possess");
+        row.innerHTML = `
+          <div class="inv-entry-head">
+            <input type="text" class="inv-name" value="${escapeHtml(item.name)}" placeholder="Objeto (ej. daga, esposas, kit de ganzúas...)">
+            <select class="inv-status">
+              <option value="possess">en posesión</option>
+              <option value="lost_temp">perdido temporalmente</option>
+              <option value="lost_forever">perdido para siempre</option>
+            </select>
+            <button class="inv-remove" type="button">quitar</button>
+          </div>
+          <div class="inv-entry-details">
+            <input type="text" class="inv-damage" value="${escapeHtml(item.damage)}" placeholder="Daño (ej. 1d6 cortante)">
+            <input type="text" class="inv-modifiers" value="${escapeHtml(item.modifiers)}" placeholder="Modificadores (ej. +1 a CA, ventaja en sigilo)">
+          </div>
+          <textarea class="inv-notes" placeholder="Descripción / efecto / notas...">${escapeHtml(item.notes)}</textarea>
+          <div class="inv-recover-row" ${item.status === "lost_temp" ? "" : "hidden"}>
+            <label>Condición o plazo para recuperarlo</label>
+            <input type="text" class="inv-recover" value="${escapeHtml(item.recoverCondition)}" placeholder="Ej. antes de que acabe la sesión, si matáis a la rata que lo robó...">
+          </div>
+        `;
+        row.querySelector(".inv-name").addEventListener("input", e => { item.name = e.target.value; });
+        row.querySelector(".inv-damage").addEventListener("input", e => { item.damage = e.target.value; });
+        row.querySelector(".inv-modifiers").addEventListener("input", e => { item.modifiers = e.target.value; });
+        row.querySelector(".inv-notes").addEventListener("input", e => { item.notes = e.target.value; });
+        row.querySelector(".inv-recover").addEventListener("input", e => { item.recoverCondition = e.target.value; });
+        const statusSelect = row.querySelector(".inv-status");
+        statusSelect.value = item.status || "possess";
+        statusSelect.addEventListener("change", e => {
+          item.status = e.target.value;
+          row.className = "inv-entry-full status-" + item.status;
+          row.querySelector(".inv-recover-row").hidden = item.status !== "lost_temp";
+        });
+        row.querySelector(".inv-remove").addEventListener("click", () => removeInventoryItem(char.id, item.id));
+        invList.appendChild(row);
+      });
+    }
+    card.querySelector(".add-inv-btn").addEventListener("click", () => addInventoryItem(char.id));
+
+    // ataques
+    const atkList = card.querySelector(".attack-list");
+    const attacks = char.attacks || [];
+    if(attacks.length === 0){
+      atkList.innerHTML = '<p class="inv-empty">Sin ataques registrados todavía.</p>';
+    } else {
+      attacks.forEach(atk => {
+        const row = document.createElement("div");
+        row.className = "attack-entry";
+        row.innerHTML = `
+          <input type="text" value="${escapeHtml(atk.name)}" placeholder="Nombre (ej. espada corta)">
+          <input type="text" class="num" value="${escapeHtml(atk.bonus)}" placeholder="+4">
+          <input type="text" value="${escapeHtml(atk.damage)}" placeholder="1d6+2 cortante">
+          <button class="atk-remove" type="button">quitar</button>
+        `;
+        const inputs = row.querySelectorAll("input");
+        inputs[0].addEventListener("input", e => { atk.name = e.target.value; });
+        inputs[1].addEventListener("input", e => { atk.bonus = e.target.value; });
+        inputs[2].addEventListener("input", e => { atk.damage = e.target.value; });
+        row.querySelector(".atk-remove").addEventListener("click", () => removeAttack(char.id, atk.id));
+        atkList.appendChild(row);
+      });
+    }
+    card.querySelector(".add-atk-btn").addEventListener("click", () => addAttack(char.id));
+
+    // rasgos
+    const traitList = card.querySelector(".trait-list");
+    const traits = char.traits || [];
+    if(traits.length === 0){
+      traitList.innerHTML = '<p class="inv-empty">Sin rasgos registrados todavía.</p>';
+    } else {
+      traits.forEach(tr => {
+        const row = document.createElement("div");
+        row.className = "trait-entry";
+        row.innerHTML = `
+          <div class="trait-entry-head">
+            <input type="text" value="${escapeHtml(tr.name)}" placeholder="Nombre (ej. Visión en la oscuridad)">
+            <button class="atk-remove" type="button">quitar</button>
+          </div>
+          <textarea placeholder="Qué hace este rasgo o dote...">${escapeHtml(tr.description)}</textarea>
+        `;
+        const inputs = row.querySelectorAll("input, textarea");
+        inputs[0].addEventListener("input", e => { tr.name = e.target.value; });
+        inputs[1].addEventListener("input", e => { tr.description = e.target.value; });
+        row.querySelector(".atk-remove").addEventListener("click", () => removeTrait(char.id, tr.id));
+        traitList.appendChild(row);
+      });
+    }
+    card.querySelector(".add-trait-btn").addEventListener("click", () => addTrait(char.id));
+
+    // lanzamiento de conjuros: cabecera
+    card.querySelectorAll("[data-spellcast]").forEach(el => {
+      el.value = char.spellcasting[el.dataset.spellcast] || "";
+      el.addEventListener("input", e => { char.spellcasting[e.target.dataset.spellcast] = e.target.value; });
+    });
+    // espacios de conjuro por nivel
+    const slotsGrid = card.querySelector(".spell-slots-grid");
+    slotsGrid.innerHTML = "";
+    char.spellcasting.slots.forEach((val, i) => {
+      const box = document.createElement("div");
+      box.className = "spell-slot-box";
+      box.innerHTML = `<label>Nv ${i + 1}</label><input type="text" value="${escapeHtml(val)}" placeholder="0">`;
+      box.querySelector("input").addEventListener("input", e => { char.spellcasting.slots[i] = e.target.value; });
+      slotsGrid.appendChild(box);
+    });
+    // lista de conjuros
+    const spellList = card.querySelector(".spell-list");
+    const spells = char.spells || [];
+    if(spells.length === 0){
+      spellList.innerHTML = '<p class="inv-empty">Sin conjuros registrados todavía.</p>';
+    } else {
+      spells.forEach(sp => {
+        const row = document.createElement("div");
+        row.className = "spell-entry";
+        row.innerHTML = `
+          <div class="spell-entry-row">
+            <input type="text" value="${escapeHtml(sp.name)}" placeholder="Nombre del conjuro" class="spell-name">
+            <input type="text" value="${escapeHtml(sp.level)}" placeholder="Nivel" class="spell-mini">
+            <input type="text" value="${escapeHtml(sp.school)}" placeholder="Escuela" class="spell-mini">
+            <input type="text" value="${escapeHtml(sp.range)}" placeholder="Alcance" class="spell-mini">
+            <button class="atk-remove" type="button">quitar</button>
+          </div>
+          <textarea placeholder="Efecto, tiempo de lanzamiento, duración, componentes...">${escapeHtml(sp.description)}</textarea>
+        `;
+        const inputs = row.querySelectorAll("input, textarea");
+        inputs[0].addEventListener("input", e => { sp.name = e.target.value; });
+        inputs[1].addEventListener("input", e => { sp.level = e.target.value; });
+        inputs[2].addEventListener("input", e => { sp.school = e.target.value; });
+        inputs[3].addEventListener("input", e => { sp.range = e.target.value; });
+        inputs[4].addEventListener("input", e => { sp.description = e.target.value; });
+        row.querySelector(".atk-remove").addEventListener("click", () => removeSpell(char.id, sp.id));
+        spellList.appendChild(row);
+      });
+    }
+    card.querySelector(".add-spell-btn").addEventListener("click", () => addSpell(char.id));
+
+    // reputación
+    const repList = card.querySelector(".rep-list");
+    const reputations = char.reputations || [];
+    if(reputations.length === 0){
+      repList.innerHTML = '<p class="rep-empty">Todavía no tiene reputación registrada en ningún pueblo.</p>';
+    } else {
+      reputations.forEach(rep => {
+        const repDiv = document.createElement("div");
+        repDiv.className = "rep-entry";
+        repDiv.innerHTML = `
+          <label>Pueblo</label>
+          <div class="rep-row">
+            <div class="rep-fields">
+              <input type="text" data-rep-field="town" value="${escapeHtml(rep.town)}" placeholder="Nombre del pueblo">
+            </div>
+            <button class="rep-remove" type="button">quitar</button>
+          </div>
+          <label>Cómo lo recibe el pueblo</label>
+          <select data-rep-field="standing">
+            <option value="bien" ${rep.standing === "bien" ? "selected" : ""}>${standingLabels.bien}</option>
+            <option value="neutral" ${rep.standing === "neutral" ? "selected" : ""}>${standingLabels.neutral}</option>
+            <option value="mal" ${rep.standing === "mal" ? "selected" : ""}>${standingLabels.mal}</option>
+          </select>
+          <label>Notas (por qué, qué ha hecho para ganarse eso...)</label>
+          <textarea data-rep-field="notes" placeholder="Motivo del respeto o del rechazo...">${escapeHtml(rep.notes)}</textarea>
+        `;
+        repDiv.querySelectorAll("[data-rep-field]").forEach(el => {
+          el.addEventListener("input", () => {
+            rep[el.dataset.repField] = el.value;
+          });
+        });
+        repDiv.querySelector(".rep-remove").addEventListener("click", () => removeReputation(char.id, rep.id));
+        repList.appendChild(repDiv);
+      });
+    }
+    card.querySelector(".add-rep-btn").addEventListener("click", () => addReputation(char.id));
+
+    wrap.appendChild(card);
+  });
+}
+
+// recalcula los modificadores derivados (salvaciones, habilidades, percepción pasiva)
+// cuando cambia un atributo, la competencia marcada o el nivel.
+function refreshDerivedMods(card, char){
+  Object.keys(attrLabels).forEach(k => {
+    if(hasVal(char.saveModOverride[k])) return;
+    const el = card.querySelector(`[data-save-mod="${k}"]`);
+    if(el) el.value = derivedMod(char, k, char.saveProf[k]);
+  });
+  skillDefs.forEach(s => {
+    if(hasVal(char.skillModOverride[s.key])) return;
+    const el = card.querySelector(`[data-skill-mod="${s.key}"]`);
+    if(el) el.value = derivedMod(char, s.attr, char.skillProf[s.key]);
+  });
+  const passive = card.querySelector("[data-passive-perception]");
+  if(passive) passive.textContent = passiveVal(char);
+}
+
+document.getElementById("addCharBtn").addEventListener("click", () => addCharacter());
+
+function escapeHtml(str){
+  return (str || "").toString().replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+// icono representativo según la clase escrita (coincidencia parcial, insensible a acentos/mayúsculas)
+const classIconTable = [
+  [["barbaro"], "🪓"],
+  [["bardo"], "🎻"],
+  [["clerigo"], "🕊️"],
+  [["druida"], "🍃"],
+  [["explorador", "ranger", "montaraz"], "🏹"],
+  [["guerrero", "fighter"], "⚔️"],
+  [["hechicer", "sorcerer"], "🔮"],
+  [["mago", "maga", "wizard"], "🪄"],
+  [["monje", "monk"], "☯️"],
+  [["paladin"], "🛡️"],
+  [["picaro", "rogue", "ladron"], "🗡️"],
+  [["brujo", "bruja", "warlock"], "👁️"]
+];
+function normalizeText(str){
+  return (str || "").toString().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+function getClassIcon(charClass){
+  const s = normalizeText(charClass);
+  if(!s) return "";
+  for(const [keys, icon] of classIconTable){
+    if(keys.some(k => s.includes(k))) return icon;
+  }
+  return "";
+}
+
+// --- town ---
+document.getElementById("townStatus").addEventListener("input", e => state.town.status = e.target.value);
+document.getElementById("townEvents").addEventListener("input", e => state.town.events = e.target.value);
+document.getElementById("punishmentNotes").addEventListener("input", e => state.punishmentNotes = e.target.value);
+
+// --- save / load ---
+document.getElementById("saveBtn").addEventListener("click", () => {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = "partida-prision-" + fecha + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("saveNote").textContent = "Partida guardada como archivo descargado.";
+});
+document.getElementById("loadBtn").addEventListener("click", () => {
+  document.getElementById("fileInput").click();
+});
+function applyLoadedState(loaded){
+  state = Object.assign({ history:["inicio"], log:[], characters:[], sessions:[], town:{status:"",events:""}, npcs:[], punishments:Array(20).fill(""), punishmentNotes:"", villainCases:[] }, loaded);
+  state.villainCases = state.villainCases || [];
+  villainSeq = state.villainCases.length;
+  state.characters = (state.characters || []).map(normalizeCharacter);
+  state.sessions = state.sessions || [];
+  state.npcs = state.npcs || [];
+  state.punishments = (state.punishments && state.punishments.length === 20) ? state.punishments : Array(20).fill("");
+  charSeq = state.characters.length;
+  repSeq = state.characters.reduce((n, c) => n + ((c.reputations || []).length), 0);
+  invSeq = state.characters.reduce((n, c) => n + ((c.inventory || []).length), 0);
+  atkSeq = state.characters.reduce((n, c) => n + ((c.attacks || []).length), 0);
+  traitSeq = state.characters.reduce((n, c) => n + ((c.traits || []).length), 0);
+  spellSeq = state.characters.reduce((n, c) => n + ((c.spells || []).length), 0);
+  sessionSeq = state.sessions.length;
+  npcSeq = state.npcs.length;
+  renderVillainCases();
+  document.getElementById("villainCaseResult").innerHTML = "";
+  renderStory();
+  renderLog();
+  renderCharacters();
+  renderSessions();
+  renderNpcs();
+  renderPunishmentList();
+  document.getElementById("punishmentNotes").value = state.punishmentNotes || "";
+  document.getElementById("townStatus").value = state.town.status || "";
+  document.getElementById("townEvents").value = state.town.events || "";
+}
+document.getElementById("fileInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const loaded = JSON.parse(reader.result);
+      applyLoadedState(loaded);
+      document.getElementById("saveNote").textContent = "Partida cargada correctamente.";
+    } catch(err){
+      document.getElementById("saveNote").textContent = "No se pudo leer el archivo. ¿Es un guardado válido?";
+    }
+  };
+  reader.readAsText(file);
+});
+
+// --- guardado automático en este navegador ---
+// Así no hace falta estar descargando y cargando el .json cada vez: la propia
+// página recuerda sola la partida en este ordenador/navegador. El botón de
+// "Guardar partida" sigue sirviendo para hacer una copia o pasarla a otro sitio.
+const AUTOSAVE_KEY = "mesaDeMandoAutosave_v1";
+function doAutosave(){
+  try{ localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state)); }catch(err){ /* almacenamiento lleno o bloqueado: no pasa nada grave */ }
+}
+setInterval(doAutosave, 4000);
+window.addEventListener("beforeunload", doAutosave);
+document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") doAutosave(); });
+
+document.getElementById("newGameBtn").addEventListener("click", () => {
+  if(!confirm("Esto borra la partida guardada automáticamente en este navegador y empieza de cero. ¿Seguro? (si quieres conservarla, descárgala antes con \"Guardar partida\")")) return;
+  try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
+  location.reload();
+});
+
+let autosaved = null;
+try{
+  const raw = localStorage.getItem(AUTOSAVE_KEY);
+  if(raw) autosaved = JSON.parse(raw);
+}catch(err){ autosaved = null; }
+
+if(autosaved){
+  applyLoadedState(autosaved);
+  document.getElementById("saveNote").textContent = "Partida recuperada automáticamente de este navegador.";
+} else {
+  renderStory();
+  renderLog();
+  renderCharacters();
+  renderSessions();
+
+  // --- NPC oculto de la partida (O' Cego / A / O' Meco) ---
+  addNpc({
+    name: "O' Cego (\"A\" en la cárcel, \"O' Meco\" en el barrio)",
+    description: "LA FACHADA: politoxicómano desgarbado, chaqueta remendada con parches que no combinan, pelo grasiento pegado a la frente, huele de una forma que ya forma parte de su personaje. Se hace el loco constantemente: habla solo, se ríe en momentos raros, cambia de tema a mitad de frase. Para tenderos, banqueros y guardias de a pie, es un hazmerreír inofensivo. LA REALIDAD: en los bajos fondos —contrabando, mafias, chanchullos gordos de la ciudad— es una autoridad absoluta e intocable, mueve dinero como calderilla y controla más hilos del hampa de los que nadie se atreve a contar. EL ANCLA: lleva un cordel deshilachado en la muñeca izquierda con un objeto oscuro que nunca enseña del todo (la llave de un deportivo, o de un búnker de lujo, según el día). Si alguien se atreve a tocárselo, la comedia se apaga de golpe durante un segundo entero: frío, autoritario, nada gracioso.",
+    story: "MECÁNICA — el Benefactor Secreto: si le caes en gracia, nunca lo sabrás de forma directa. Su ayuda llega disfrazada de casualidad absurda (un coche 'abandonado' con las llaves puestas justo cuando hacía falta, dinero exacto en un sitio absurdo, un enemigo con 'problemas' repentinos). Como máster, nunca lo confirmo — dejo que los jugadores sospechen. GANCHO A 'El favor que no pidieron': el grupo encuentra algo que necesitaba desesperadamente, sin explicación ni nadie que lo reclame; él anda cerca, actuando como si nada. GANCHO B 'La mano que no debieron tocar': si alguien le roba o le toca el colgante, un segundo de frialdad total revela que sabe mucho más de lo que ha contado — y luego vuelve a reírse solo como si nada."
+  });
+  renderNpcs();
+}
+
+renderPunishmentList();
+renderVillainCases();
+document.getElementById("addVillainCaseBtn").addEventListener("click", addVillainCase);
+document.getElementById("rollVillainCaseBtn").addEventListener("click", rollVillainCase);
+document.getElementById("resetVillainCasesBtn").addEventListener("click", () => {
+  state.villainCases.forEach(c => { c.resolved = false; });
+  renderVillainCases();
+  document.getElementById("villainCaseResult").innerHTML = "";
+});
+document.getElementById("punishmentShape").addEventListener("click", rollPunishment);
+document.getElementById("punishmentDeleteBtn").addEventListener("click", () => {
+  if(lastRolledPunishment === null) return;
+  state.punishments[lastRolledPunishment] = "";
+  syncPunishmentRow(lastRolledPunishment);
+  refreshPunishmentResultText();
+  document.getElementById("punishmentEditBox").hidden = true;
+});
+document.getElementById("punishmentEditBtn").addEventListener("click", () => {
+  if(lastRolledPunishment === null) return;
+  const box = document.getElementById("punishmentEditBox");
+  const input = document.getElementById("punishmentEditInput");
+  input.value = state.punishments[lastRolledPunishment] || "";
+  box.hidden = false;
+  input.focus();
+});
+document.getElementById("punishmentSaveBtn").addEventListener("click", () => {
+  if(lastRolledPunishment === null) return;
+  const input = document.getElementById("punishmentEditInput");
+  state.punishments[lastRolledPunishment] = input.value;
+  syncPunishmentRow(lastRolledPunishment);
+  refreshPunishmentResultText();
+  document.getElementById("punishmentEditBox").hidden = true;
+});
+document.getElementById("punishmentCancelBtn").addEventListener("click", () => {
+  document.getElementById("punishmentEditBox").hidden = true;
+});
+
+// --- tirador de dados flotante ---
+(function(){
+  const diceOptions = [4, 6, 8, 10, 12, 20];
+  const fab = document.getElementById("diceFab");
+  const menu = document.getElementById("diceMenu");
+  const overlay = document.getElementById("diceOverlay");
+  const shape = document.getElementById("diceShape");
+  const resultNum = document.getElementById("diceResultNum");
+  const overlayLabel = document.getElementById("diceOverlayLabel");
+  const closeBtn = document.getElementById("diceOverlayClose");
+
+  diceOptions.forEach(sides => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "d" + sides;
+    btn.addEventListener("click", () => {
+      menu.classList.remove("open");
+      rollDie(sides);
+    });
+    menu.appendChild(btn);
+  });
+
+  // --- pulsación larga sobre el botón de dados: activa/desactiva el truco en secreto ---
+  let loaded = false;
+  let pressTimer = null;
+  let longPressFired = false;
+  const LONG_PRESS_MS = 650;
+
+  function startPress(){
+    longPressFired = false;
+    pressTimer = setTimeout(() => {
+      longPressFired = true;
+      loaded = !loaded;
+      fab.classList.toggle("loaded", loaded);
+    }, LONG_PRESS_MS);
+  }
+  function cancelPress(){
+    clearTimeout(pressTimer);
+  }
+  fab.addEventListener("mousedown", startPress);
+  fab.addEventListener("touchstart", startPress, { passive: true });
+  fab.addEventListener("mouseup", cancelPress);
+  fab.addEventListener("mouseleave", cancelPress);
+  fab.addEventListener("touchend", cancelPress);
+  fab.addEventListener("touchcancel", cancelPress);
+
+  fab.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if(longPressFired){
+      longPressFired = false;
+      return; // la pulsación larga ya hizo su trabajo, no abrir el menú
+    }
+    menu.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if(!menu.contains(e.target) && e.target !== fab){
+      menu.classList.remove("open");
+    }
+  });
+
+  function closeOverlay(){ overlay.classList.remove("open"); }
+  closeBtn.addEventListener("click", closeOverlay);
+  overlay.addEventListener("click", (e) => { if(e.target === overlay) closeOverlay(); });
+
+  // tirada normal: uniforme entre 1 y sides
+  function fairRoll(sides){ return 1 + Math.floor(Math.random() * sides); }
+  // tirada cargada: sigue siendo al azar, pero favorece números altos
+  function loadedRoll(sides){
+    // 1 de cada 10 tiradas es completamente normal, para no levantar sospechas
+    if(Math.random() < 0.1) return fairRoll(sides);
+    // las otras 9 de cada 10 caen casi siempre en la mitad alta del dado
+    // (en un d20, a partir de 12; se escala igual en el resto de dados)
+    const threshold = Math.max(1, Math.round(sides * 0.6));
+    return threshold + Math.floor(Math.random() * (sides - threshold + 1));
+  }
+
+  let rolling = false;
+  let currentSides = null;
+  function rollDie(sides){
+    if(rolling) return;
+    rolling = true;
+    currentSides = sides;
+    shape.className = "dice-shape dice-d" + sides;
+    overlayLabel.textContent = "tirando d" + sides + "...";
+    resultNum.classList.remove("result");
+    overlay.classList.add("open");
+    let ticks = 0;
+    const maxTicks = 14;
+    const interval = setInterval(() => {
+      resultNum.textContent = fairRoll(sides);
+      ticks++;
+      if(ticks >= maxTicks){
+        clearInterval(interval);
+        const result = loaded ? loadedRoll(sides) : fairRoll(sides);
+        resultNum.textContent = result;
+        resultNum.classList.add("result");
+        overlayLabel.textContent = "resultado d" + sides + " · toca el dado para tirar de nuevo";
+        rolling = false;
+      }
+    }, 45);
+  }
+  shape.addEventListener("click", () => {
+    if(currentSides && !rolling) rollDie(currentSides);
+  });
+})();
+
+// --- importar ficha de personaje (texto pegado) ---
+document.getElementById("charImportBtn").addEventListener("click", () => {
+  const box = document.getElementById("charImportText");
+  const text = box.value;
+  if(!text.trim()) return;
+  let data = parseLabeledCharacterText(text);
+  if(Object.keys(data).length === 0) data = { notes: text.trim() };
+  if(data.traits) data.traits = data.traits.map(t => Object.assign({ id: "trait-" + (traitSeq++) }, t));
+  if(data.spells) data.spells = data.spells.map(s => Object.assign({ id: "spell-" + (spellSeq++) }, s));
+  addCharacter(data);
+  box.value = "";
+});
+
+// --- importar NPC (texto pegado) ---
+document.getElementById("npcImportBtn").addEventListener("click", () => {
+  const box = document.getElementById("npcImportText");
+  const text = box.value;
+  if(!text.trim()) return;
+  let data = parseLabeledNpcText(text);
+  if(Object.keys(data).length === 0) data = { description: text.trim() };
+  addNpc(data);
+  box.value = "";
+});
+
+// --- importar PDF de hoja de personaje (jugador) ---
+document.getElementById("charPdfInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const status = document.getElementById("charPdfStatus");
+  status.textContent = "leyendo el PDF...";
+  try{
+    if(!window.pdfjsLib) throw new Error("sin librería PDF");
+    const items = await extractPdfItems(file);
+    const data = parseNivel20Sheet(items);
+    if(data.traits) data.traits = data.traits.map(t => Object.assign({ id: "trait-" + (traitSeq++) }, t));
+    if(data.spells) data.spells = data.spells.map(s => Object.assign({ id: "spell-" + (spellSeq++) }, s));
+    if(Object.keys(data).length === 0){
+      status.textContent = "no se reconoció ningún campo — pega el texto a mano o rellénala tú.";
+    } else {
+      addCharacter(data);
+      const extras = [];
+      if(data.traits) extras.push(data.traits.length + " rasgo" + (data.traits.length === 1 ? "" : "s"));
+      if(data.spells) extras.push(data.spells.length + " conjuro" + (data.spells.length === 1 ? "" : "s"));
+      status.textContent = "ficha creada a partir de \"" + file.name + "\"" +
+        (extras.length ? " (" + extras.join(" y ") + " detectados)" : "") +
+        " — revísala y corrige lo que haga falta.";
+    }
+  }catch(err){
+    status.textContent = "no se pudo leer este PDF. Prueba a pegar el texto en su lugar.";
+  }
+  e.target.value = "";
+});
+
+// --- importar PDF de hoja (NPC) ---
+document.getElementById("npcPdfInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const status = document.getElementById("npcPdfStatus");
+  status.textContent = "leyendo el PDF...";
+  try{
+    if(!window.pdfjsLib) throw new Error("sin librería PDF");
+    const items = await extractPdfItems(file);
+    const parsed = parseNivel20Sheet(items);
+    const rawText = items.map(it => it.text).join(" ");
+    const data = { name: parsed.name || "", description: rawText.slice(0, 600) };
+    addNpc(data);
+    status.textContent = "NPC creado a partir de \"" + file.name + "\" — recorta y ajusta la descripción a tu gusto.";
+  }catch(err){
+    status.textContent = "no se pudo leer este PDF. Prueba a pegar el texto en su lugar.";
+  }
+  e.target.value = "";
+});
+
+// --- buscador de personajes ---
+document.getElementById("charFilter").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll("#charList .char-card").forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = !q || text.includes(q) ? "" : "none";
+  });
+});
+
+// --- reloj de tensión (ratas / ronda del guardia) ---
+let tensionState = {
+  running: false, ratCount: 4,
+  ratMs: 5 * 60 * 1000, guardMs: 15 * 60 * 1000,
+  ratNext: null, guardNext: null,
+  ratRemainingPaused: null, guardRemainingPaused: null
+};
+function formatMMSS(ms){
+  if(ms < 0) ms = 0;
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return String(m).padStart(2, "0") + ":" + String(r).padStart(2, "0");
+}
+function flash(el){
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 1500);
+}
+function showTensionNotify(){
+  document.getElementById("tensionNotifyDot").classList.add("show");
+}
+function tensionTick(){
+  if(!tensionState.running) return;
+  const now = Date.now();
+  let ratRemaining = tensionState.ratNext - now;
+  if(ratRemaining <= 0){
+    tensionState.ratCount *= 2;
+    tensionState.ratNext = now + tensionState.ratMs;
+    ratRemaining = tensionState.ratMs;
+    const countEl = document.getElementById("tensionRatCount");
+    countEl.textContent = tensionState.ratCount;
+    flash(countEl);
+    showTensionNotify();
+  }
+  let guardRemaining = tensionState.guardNext - now;
+  if(guardRemaining <= 0){
+    tensionState.guardNext = now + tensionState.guardMs;
+    guardRemaining = tensionState.guardMs;
+    flash(document.getElementById("tensionGuardTimer").parentElement);
+    showTensionNotify();
+  }
+  document.getElementById("tensionRatTimer").textContent = formatMMSS(ratRemaining);
+  document.getElementById("tensionGuardTimer").textContent = formatMMSS(guardRemaining);
+}
+setInterval(tensionTick, 500);
+function startTensionClock(){
+  const now = Date.now();
+  const btn = document.getElementById("tensionStartBtn");
+  tensionState.ratNext = now + (tensionState.ratRemainingPaused != null ? tensionState.ratRemainingPaused : tensionState.ratMs);
+  tensionState.guardNext = now + (tensionState.guardRemainingPaused != null ? tensionState.guardRemainingPaused : tensionState.guardMs);
+  tensionState.ratRemainingPaused = null;
+  tensionState.guardRemainingPaused = null;
+  tensionState.running = true;
+  btn.textContent = "pausar";
+}
+document.getElementById("tensionStartBtn").addEventListener("click", () => {
+  if(!tensionState.running){
+    startTensionClock();
+  } else {
+    const now = Date.now();
+    const btn = document.getElementById("tensionStartBtn");
+    tensionState.ratRemainingPaused = tensionState.ratNext - now;
+    tensionState.guardRemainingPaused = tensionState.guardNext - now;
+    tensionState.ratNext = null;
+    tensionState.guardNext = null;
+    tensionState.running = false;
+    btn.textContent = "iniciar";
+  }
+});
+// se pone en marcha solo al abrir la página, para que no dependa de acordarte de pulsar nada
+startTensionClock();
+document.getElementById("tensionResetBtn").addEventListener("click", () => {
+  tensionState = {
+    running: false, ratCount: 4,
+    ratMs: 5 * 60 * 1000, guardMs: 15 * 60 * 1000,
+    ratNext: null, guardNext: null,
+    ratRemainingPaused: null, guardRemainingPaused: null
+  };
+  document.getElementById("tensionRatCount").textContent = "4";
+  document.getElementById("tensionRatTimer").textContent = "05:00";
+  document.getElementById("tensionGuardTimer").textContent = "15:00";
+  document.getElementById("tensionStartBtn").textContent = "iniciar";
+});
+document.getElementById("tensionToggleCollapse").addEventListener("click", () => {
+  const body = document.getElementById("tensionBody");
+  const btn = document.getElementById("tensionToggleCollapse");
+  body.hidden = !body.hidden;
+  btn.textContent = body.hidden ? "+" : "–";
+  if(!body.hidden) document.getElementById("tensionNotifyDot").classList.remove("show");
+});
+
+// --- llamar al guardia (50% pasa de vosotros / 50% viene: 25% feliz, 75% cabreado) ---
+document.getElementById("tensionCallGuardBtn").addEventListener("click", () => {
+  const resultEl = document.getElementById("tensionCallResult");
+  if(Math.random() < 0.5){
+    resultEl.textContent = "El guardia pasa totalmente de vosotros.";
+  } else if(Math.random() < 0.25){
+    resultEl.textContent = "El guardia viene... y viene feliz.";
+  } else {
+    resultEl.textContent = "El guardia viene... y viene cabreado.";
+  }
+  flash(resultEl);
+});
+
+// --- control manual del timer del guardia ---
+function adjustGuardTimer(deltaMs){
+  const now = Date.now();
+  const timerEl = document.getElementById("tensionGuardTimer");
+  if(tensionState.running){
+    tensionState.guardNext = Math.max(now, tensionState.guardNext + deltaMs);
+    timerEl.textContent = formatMMSS(tensionState.guardNext - now);
+  } else {
+    const base = tensionState.guardRemainingPaused != null ? tensionState.guardRemainingPaused : tensionState.guardMs;
+    tensionState.guardRemainingPaused = Math.max(0, base + deltaMs);
+    timerEl.textContent = formatMMSS(tensionState.guardRemainingPaused);
+  }
+}
+document.getElementById("tensionGuardMinus").addEventListener("click", () => adjustGuardTimer(-5 * 60 * 1000));
+document.getElementById("tensionGuardPlus").addEventListener("click", () => adjustGuardTimer(5 * 60 * 1000));
+document.getElementById("tensionGuardNow").addEventListener("click", () => {
+  const now = Date.now();
+  const timerEl = document.getElementById("tensionGuardTimer");
+  if(tensionState.running){
+    tensionState.guardNext = now + tensionState.guardMs;
+  } else {
+    tensionState.guardRemainingPaused = tensionState.guardMs;
+  }
+  timerEl.textContent = formatMMSS(tensionState.guardMs);
+  flash(timerEl.parentElement);
+});
+</script>
+</body>
+</html>
