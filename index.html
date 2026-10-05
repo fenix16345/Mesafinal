@@ -225,6 +225,26 @@
   .filter-row{ margin-bottom: 14px; }
   .filter-row input{ font-family:'Crimson Pro', Georgia, serif; }
 
+  /* --- tabla de objetos --- */
+  .equip-cat-filters{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px; }
+  .equip-cat-btn{ font-family:'Space Grotesk', sans-serif; font-size:11px; background: var(--stone-2);
+    color: var(--ink-dim); border:1px solid var(--border); border-radius:12px; padding:5px 11px; cursor:pointer; }
+  .equip-cat-btn:hover{ border-color: var(--torch); color: var(--ink); }
+  .equip-cat-btn.active{ background: var(--torch-dim); color: var(--ink); border-color: var(--torch); }
+  .equip-group-title{ font-family:'Space Grotesk', sans-serif; font-size:11px; letter-spacing:.05em;
+    text-transform: uppercase; color: var(--torch); margin: 20px 0 8px; }
+  .equip-group-title:first-child{ margin-top:0; }
+  .equip-row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .equip-row:last-child{ border-bottom:none; }
+  .equip-name{ color: var(--ink); flex-shrink:0; }
+  .equip-detail{ color: var(--ink-dim); font-size:12px; flex:1; text-align:left; margin-left: 10px; }
+  .equip-price{ font-family:'Space Grotesk', sans-serif; color: var(--torch); white-space:nowrap; flex-shrink:0; }
+  .equip-empty{ font-size:13px; color: var(--ink-dim); font-style: italic; }
+  .equip-currency-note{ font-size:12px; color: var(--ink-dim); background: var(--stone-2);
+    border:1px solid var(--border); border-radius:4px; padding:9px 12px; margin:0 0 16px; line-height:1.6; }
+  .equip-currency-note strong{ color: var(--ink); }
+
   .save-row{ display:flex; gap:10px; flex-wrap:wrap; }
   .save-btn{ flex:1; font-family:'Space Grotesk', sans-serif; font-size:14px;
     background:
@@ -492,7 +512,17 @@
     display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
     font-size:10px; letter-spacing:.06em; color: var(--ink-dim); text-transform: uppercase;
   }
+  .tension-header{ gap:6px; }
+  .tension-header span{ flex:1; }
   .tension-header .ctrl-btn{ padding: 0 4px; font-size:14px; }
+  .tension-header #tensionHideBtn{ font-size:9px; text-transform:uppercase; letter-spacing:.04em; padding:2px 6px; }
+  .tension-show-btn{
+    position: fixed; left: 18px; bottom: 18px; z-index: 40;
+    background: var(--stone); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; font-family:'Space Grotesk', sans-serif; font-size:11px; color: var(--ink-dim);
+    box-shadow: 0 6px 20px rgba(0,0,0,.5); cursor:pointer; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .tension-show-btn:hover{ color: var(--torch); border-color: var(--torch); }
   .tension-row-block{ margin-bottom: 8px; }
   .tension-label{ color: var(--ink); }
   .tension-value{ font-weight:700; color: var(--torch); transition: color .3s ease; }
@@ -682,6 +712,7 @@
     <button data-tab="npcs">NPCs</button>
     <button data-tab="castigos">Castigos</button>
     <button data-tab="malos">Los malos</button>
+    <button data-tab="objetos">Objetos</button>
     <button data-tab="guardar">Guardar / cargar</button>
   </nav>
 
@@ -814,6 +845,21 @@
     </div>
   </section>
 
+  <!-- OBJETOS -->
+  <section class="panel" id="tab-objetos">
+    <div class="card">
+      <p class="eyebrow">tabla de precios</p>
+      <h2>Objetos y equipo (D&amp;D 5ª edición)</h2>
+      <p class="body-text">Precios de referencia del equipo estándar: armas, armaduras, herramientas y equipo de aventurero. No es un listado completo de todos los objetos de todos los libros — cubre lo más habitual en partida. Busca por nombre o filtra por categoría para encontrar algo rápido en mitad de la partida.</p>
+      <p class="equip-currency-note"><strong>Monedas:</strong> pc = pieza de cobre · ps = pieza de plata (1 ps = 10 pc) · pe = pieza de electro (1 pe = 5 ps) · po = pieza de oro (1 po = 10 ps = 2 pe) · pp = pieza de platino (1 pp = 10 po). La inmensa mayoría de precios se dan en po.</p>
+      <div class="filter-row">
+        <input type="text" id="equipFilter" placeholder="Buscar objeto (ej. daga, cuerda, ganzúas...)">
+      </div>
+      <div id="equipCategoryFilters" class="equip-cat-filters"></div>
+      <div id="equipList"></div>
+    </div>
+  </section>
+
   <!-- GUARDAR -->
   <section class="panel" id="tab-guardar">
     <div class="card">
@@ -842,6 +888,7 @@
   <div class="tension-header">
     <span>reloj de tensión</span>
     <button type="button" class="ctrl-btn" id="tensionToggleCollapse">–</button>
+    <button type="button" class="ctrl-btn" id="tensionHideBtn" title="Ocultar el reloj de tensión (para cuando ya no haga falta, p.ej. tras la sesión de la cárcel)">ocultar</button>
   </div>
   <div class="tension-body" id="tensionBody">
     <div class="tension-row-block">
@@ -865,6 +912,7 @@
     </div>
   </div>
 </div>
+<button type="button" class="tension-show-btn" id="tensionShowBtn" style="display:none;">mostrar reloj de tensión</button>
 <div class="dice-menu" id="diceMenu"></div>
 <div class="dice-overlay" id="diceOverlay">
   <div class="dice-overlay-card">
@@ -992,6 +1040,222 @@ const skillDefs = [
   { key: "sigilo", label: "Sigilo", attr: "des" },
   { key: "supervivencia", label: "Supervivencia", attr: "sab" },
   { key: "tratoAnimales", label: "Trato con animales", attr: "sab" }
+];
+
+// --- tabla de objetos y precios (equipo estándar D&D 5ª edición, SRD) ---
+const equipmentData = [
+  // Armas simples — cuerpo a cuerpo
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Clava", price: "1 ps", detail: "1d4 contundente · 2 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Daga", price: "2 po", detail: "1d4 perforante · sutil, ligera, arrojadiza (6/18m) · 1 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza grande (garrote)", price: "2 ps", detail: "1d8 contundente · a dos manos · 10 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hacha de mano", price: "5 po", detail: "1d6 cortante · ligera, arrojadiza (6/18m) · 2 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Jabalina", price: "5 ps", detail: "1d6 perforante · arrojadiza (9/36m) · 2 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Martillo ligero", price: "2 po", detail: "1d4 contundente · ligera, arrojadiza (6/18m) · 2 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza", price: "5 po", detail: "1d6 contundente · 4 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Bastón", price: "2 ps", detail: "1d6 contundente · versátil (1d8) · 4 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hoz", price: "1 po", detail: "1d4 cortante · ligera · 2 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Lanza", price: "1 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 3 lb" },
+  // Armas simples — a distancia
+  { cat: "Armas simples (a distancia)", name: "Ballesta ligera", price: "25 po", detail: "1d8 perforante · munición (24/96m), recarga, a dos manos · 5 lb" },
+  { cat: "Armas simples (a distancia)", name: "Dardo", price: "5 pc", detail: "1d4 perforante · sutil, arrojadiza (6/18m)" },
+  { cat: "Armas simples (a distancia)", name: "Arco corto", price: "25 po", detail: "1d6 perforante · munición (24/96m), a dos manos · 2 lb" },
+  { cat: "Armas simples (a distancia)", name: "Honda", price: "1 po", detail: "1d4 contundente · munición (9/36m)" },
+  // Armas marciales — cuerpo a cuerpo
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha de batalla", price: "10 po", detail: "1d8 cortante · versátil (1d10) · 4 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mangual", price: "10 po", detail: "1d8 contundente · 2 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Guja (glaive)", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha grande", price: "30 po", detail: "1d12 cortante · pesada, a dos manos · 7 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mandoble", price: "50 po", detail: "2d6 cortante · pesada, a dos manos · 6 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Alabarda", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lanza de caballería", price: "10 po", detail: "1d12 perforante · alcance, especial · 6 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada larga", price: "15 po", detail: "1d8 cortante · versátil (1d10) · 3 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mazo", price: "10 po", detail: "2d6 contundente · pesada, a dos manos · 10 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lucero del alba", price: "15 po", detail: "1d8 perforante · 4 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pica", price: "5 po", detail: "1d10 perforante · pesada, alcance, a dos manos · 18 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Estoque", price: "25 po", detail: "1d8 perforante · sutil · 2 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Cimitarra", price: "25 po", detail: "1d6 cortante · sutil, ligera · 3 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada corta", price: "10 po", detail: "1d6 perforante · sutil, ligera · 2 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Tridente", price: "5 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 4 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pico de guerra", price: "5 po", detail: "1d8 perforante · 2 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Martillo de guerra", price: "15 po", detail: "1d8 contundente · versátil (1d10) · 2 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Látigo", price: "2 po", detail: "1d4 cortante · sutil, alcance · 3 lb" },
+  // Armas marciales — a distancia
+  { cat: "Armas marciales (a distancia)", name: "Cerbatana", price: "10 po", detail: "1 perforante · munición (7.5/30m), recarga · 1 lb" },
+  { cat: "Armas marciales (a distancia)", name: "Ballesta de mano", price: "75 po", detail: "1d6 perforante · munición (9/36m), ligera, recarga · 3 lb" },
+  { cat: "Armas marciales (a distancia)", name: "Ballesta pesada", price: "50 po", detail: "1d10 perforante · munición (30/120m), pesada, recarga, a dos manos · 18 lb" },
+  { cat: "Armas marciales (a distancia)", name: "Arco largo", price: "50 po", detail: "1d8 perforante · munición (45/180m), pesada, a dos manos · 2 lb" },
+  { cat: "Armas marciales (a distancia)", name: "Red", price: "1 po", detail: "especial · arrojadiza (1.5/4.5m) · 3 lb" },
+  // Armadura ligera
+  { cat: "Armadura ligera", name: "Acolchada", price: "5 po", detail: "CA 11 + mod. Des · desventaja en Sigilo · 8 lb" },
+  { cat: "Armadura ligera", name: "Cuero", price: "10 po", detail: "CA 11 + mod. Des · 10 lb" },
+  { cat: "Armadura ligera", name: "Cuero tachonado", price: "45 po", detail: "CA 12 + mod. Des · 13 lb" },
+  // Armadura media
+  { cat: "Armadura media", name: "Piel", price: "10 po", detail: "CA 12 + mod. Des (máx 2) · 12 lb" },
+  { cat: "Armadura media", name: "Camisote de mallas", price: "50 po", detail: "CA 13 + mod. Des (máx 2) · 20 lb" },
+  { cat: "Armadura media", name: "Loriga escamada", price: "50 po", detail: "CA 14 + mod. Des (máx 2) · desventaja en Sigilo · 45 lb" },
+  { cat: "Armadura media", name: "Coraza", price: "400 po", detail: "CA 14 + mod. Des (máx 2) · 20 lb" },
+  { cat: "Armadura media", name: "Semiplaca", price: "750 po", detail: "CA 15 + mod. Des (máx 2) · desventaja en Sigilo · 40 lb" },
+  // Armadura pesada
+  { cat: "Armadura pesada", name: "Cota de anillas", price: "30 po", detail: "CA 14 · desventaja en Sigilo · 40 lb" },
+  { cat: "Armadura pesada", name: "Cota de malla", price: "75 po", detail: "CA 16 · requiere Fue 13 · desventaja en Sigilo · 55 lb" },
+  { cat: "Armadura pesada", name: "Armadura de bandas", price: "200 po", detail: "CA 17 · requiere Fue 15 · desventaja en Sigilo · 60 lb" },
+  { cat: "Armadura pesada", name: "Armadura de placas", price: "1500 po", detail: "CA 18 · requiere Fue 15 · desventaja en Sigilo · 65 lb" },
+  { cat: "Armadura pesada", name: "Escudo", price: "10 po", detail: "+2 CA · 6 lb" },
+  // Equipo de aventurero
+  { cat: "Equipo de aventurero", name: "Ábaco", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Ácido (vial)", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Fuego alquímico (frasco)", price: "50 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Antídoto (vial)", price: "50 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Flechas (20)", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Mochila", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Balines de acero (bolsa de 1000)", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Barril", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cesta", price: "4 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Saco de dormir", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Campana", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Manta", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Polea y aparejo", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Libro", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Botella de cristal", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cubo", price: "5 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de ladrón (pack)", price: "16 po", detail: "equipo básico de ladrón" },
+  { cat: "Equipo de aventurero", name: "Abrojos (bolsa de 20)", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Vela", price: "1 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Carcaj de virotes", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Estuche de mapas o pergaminos", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cadena (3 m)", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Tiza (1 trozo)", price: "1 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cofre", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Equipo de escalada", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Ropa corriente", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Disfraz", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Ropa fina", price: "15 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Ropa de viaje", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Saquito de componentes", price: "25 po", detail: "foco arcano" },
+  { cat: "Equipo de aventurero", name: "Palanca", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cristal", price: "10 po", detail: "foco arcano" },
+  { cat: "Equipo de aventurero", name: "Hatillo de diplomático (pack)", price: "39 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Kit de disfraz", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de mazmorrero (pack)", price: "12 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Símbolo sagrado (emblema)", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de artista (pack)", price: "40 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de explorador (pack)", price: "10 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Aparejos de pesca", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Frasco o jarra", price: "2 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Garfio", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Martillo", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Mazo pesado (de herrero)", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Kit de sanador", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Agua bendita (frasco)", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Reloj de arena", price: "25 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Trampa de caza", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Tinta (frasco de 30 ml)", price: "10 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Pluma de escribir", price: "2 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Escalera (3 m)", price: "1 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Lámpara", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Linterna sorda", price: "10 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Linterna encapuchada", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cerradura", price: "10 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Lupa", price: "100 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Grilletes", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Kit de cocina", price: "2 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Espejo de acero", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Aceite (frasco)", price: "1 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Papel (una hoja)", price: "2 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Pergamino (una hoja)", price: "1 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Perfume (vial)", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Piqueta de minero", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Piolet", price: "5 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Veneno básico (vial)", price: "100 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Pértiga (3 m)", price: "5 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Olla de hierro", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Poción de curación", price: "50 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Bolsa", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de sacerdote (pack)", price: "19 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Carcaj", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Ariete portátil", price: "4 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Raciones (1 día)", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Túnica", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cuerda de cáñamo (15 m)", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Cuerda de seda (15 m)", price: "10 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Saco", price: "1 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Balanza de mercader", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Hatillo de erudito (pack)", price: "40 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Lacre", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Pala", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Silbato de señales", price: "5 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Anillo de sello", price: "5 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Balas de honda (20)", price: "4 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Jabón", price: "2 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Libro de conjuros", price: "50 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Estaca de hierro", price: "1 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Catalejo", price: "1000 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Bastón druídico", price: "5 po", detail: "foco" },
+  { cat: "Equipo de aventurero", name: "Cuerda fina (3 m)", price: "1 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Tienda (2 personas)", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Yesquero", price: "5 ps", detail: "" },
+  { cat: "Equipo de aventurero", name: "Antorcha", price: "1 pc", detail: "" },
+  { cat: "Equipo de aventurero", name: "Totem", price: "1 po", detail: "foco sagrado" },
+  { cat: "Equipo de aventurero", name: "Vial (vacío)", price: "1 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Varita", price: "10 po", detail: "foco arcano" },
+  { cat: "Equipo de aventurero", name: "Odre", price: "2 po", detail: "" },
+  { cat: "Equipo de aventurero", name: "Piedra de afilar", price: "1 pc", detail: "" },
+  // Herramientas
+  { cat: "Herramientas", name: "Suministros de alquimista", price: "50 po", detail: "" },
+  { cat: "Herramientas", name: "Suministros de cervecero", price: "20 po", detail: "" },
+  { cat: "Herramientas", name: "Utensilios de calígrafo", price: "10 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de carpintero", price: "8 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de cartógrafo", price: "15 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de zapatero", price: "5 po", detail: "" },
+  { cat: "Herramientas", name: "Utensilios de cocina", price: "1 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de vidriero", price: "30 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de joyero", price: "25 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de curtidor", price: "5 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de albañil", price: "10 po", detail: "" },
+  { cat: "Herramientas", name: "Suministros de pintor", price: "10 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de alfarero", price: "10 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de herrero", price: "20 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de mecánico", price: "50 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de tejedor", price: "1 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de tallista", price: "1 po", detail: "" },
+  { cat: "Herramientas", name: "Kit de disfraz", price: "25 po", detail: "" },
+  { cat: "Herramientas", name: "Kit de falsificación", price: "15 po", detail: "" },
+  { cat: "Herramientas", name: "Juego de dados", price: "1 ps", detail: "" },
+  { cat: "Herramientas", name: "Juego de ajedrez dracónico", price: "1 po", detail: "" },
+  { cat: "Herramientas", name: "Baraja de cartas", price: "5 ps", detail: "" },
+  { cat: "Herramientas", name: "Kit de herbolario", price: "5 po", detail: "" },
+  { cat: "Herramientas", name: "Herramientas de navegante", price: "25 po", detail: "" },
+  { cat: "Herramientas", name: "Ganzúas", price: "25 po", detail: "" },
+  // Instrumentos musicales
+  { cat: "Instrumentos musicales", name: "Gaita", price: "30 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Tambor", price: "6 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Dulcémele", price: "25 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Flauta travesera", price: "2 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Laúd", price: "35 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Lira", price: "30 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Cuerno", price: "3 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Flauta de Pan", price: "12 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Chirimía", price: "2 po", detail: "" },
+  { cat: "Instrumentos musicales", name: "Viola", price: "30 po", detail: "" },
+  // Monturas y vehículos
+  { cat: "Monturas y vehículos", name: "Camello", price: "50 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Burro o mula", price: "8 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Elefante", price: "200 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Caballo de tiro", price: "50 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Caballo de monta", price: "75 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Mastín", price: "25 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Poni", price: "30 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Corcel de guerra", price: "400 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Silla de montar (normal)", price: "10 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Silla de montar (militar)", price: "20 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Carro", price: "15 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Carruaje", price: "100 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Carreta", price: "35 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Bote de remos", price: "50 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Barco de vela", price: "10000 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Galera de guerra", price: "25000 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Barcaza", price: "3000 po", detail: "" },
+  { cat: "Monturas y vehículos", name: "Drakar (longship)", price: "10000 po", detail: "" }
 ];
 
 // --- tabs ---
@@ -1461,7 +1725,8 @@ function blankCharacter(id){
     spells: [],
     personality: "", ideals: "", bonds: "", flaws: "",
     story: "", goal: "", town: "", notes: "",
-    reputations: []
+    reputations: [],
+    coins: { pc: "", ps: "", pe: "", po: "", pp: "" }
   };
 }
 // Rellena con valores por defecto cualquier campo que falte (para partidas guardadas
@@ -1488,6 +1753,7 @@ function normalizeCharacter(char){
   merged.spellcasting = Object.assign({}, blank.spellcasting, char.spellcasting || {});
   merged.spellcasting.slots = (char.spellcasting && char.spellcasting.slots && char.spellcasting.slots.length === 9)
     ? char.spellcasting.slots : blank.spellcasting.slots.slice();
+  merged.coins = Object.assign({}, blank.coins, char.coins || {});
   return merged;
 }
 function addCharacter(data){
@@ -1723,6 +1989,51 @@ function rollVillainCase(){
     out.innerHTML = "";
   });
 }
+
+// --- tabla de objetos y precios ---
+let equipActiveCat = "";
+function renderEquipCategoryFilters(){
+  const wrap = document.getElementById("equipCategoryFilters");
+  const cats = [...new Set(equipmentData.map(it => it.cat))];
+  wrap.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.type = "button";
+  allBtn.className = "equip-cat-btn" + (equipActiveCat === "" ? " active" : "");
+  allBtn.textContent = "todas";
+  allBtn.addEventListener("click", () => { equipActiveCat = ""; renderEquipCategoryFilters(); renderEquipment(); });
+  wrap.appendChild(allBtn);
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "equip-cat-btn" + (equipActiveCat === cat ? " active" : "");
+    btn.textContent = cat;
+    btn.addEventListener("click", () => { equipActiveCat = (equipActiveCat === cat ? "" : cat); renderEquipCategoryFilters(); renderEquipment(); });
+    wrap.appendChild(btn);
+  });
+}
+function renderEquipment(){
+  const wrap = document.getElementById("equipList");
+  const q = (document.getElementById("equipFilter").value || "").trim().toLowerCase();
+  const items = equipmentData.filter(it =>
+    (!equipActiveCat || it.cat === equipActiveCat) &&
+    (!q || it.name.toLowerCase().includes(q) || it.detail.toLowerCase().includes(q))
+  );
+  if(items.length === 0){
+    wrap.innerHTML = '<p class="equip-empty">No se ha encontrado ningún objeto con ese filtro.</p>';
+    return;
+  }
+  let html = "";
+  let lastCat = null;
+  items.forEach(it => {
+    if(it.cat !== lastCat){
+      html += `<p class="equip-group-title">${escapeHtml(it.cat)}</p>`;
+      lastCat = it.cat;
+    }
+    html += `<div class="equip-row"><span class="equip-name">${escapeHtml(it.name)}</span><span class="equip-detail">${escapeHtml(it.detail)}</span><span class="equip-price">${escapeHtml(it.price)}</span></div>`;
+  });
+  wrap.innerHTML = html;
+}
+document.getElementById("equipFilter").addEventListener("input", renderEquipment);
 
 // --- dado de castigos ---
 function renderPunishmentList(){
@@ -2029,6 +2340,17 @@ function renderCharacters(){
       </details>
 
       <div class="sheet-section">
+        <p class="eyebrow">monedas</p>
+        <div class="mini-grid" style="grid-template-columns: repeat(5, 1fr);">
+          <div class="mini-item"><label>pc</label><input type="number" data-coin="pc" value="${char.coins.pc}" min="0"></div>
+          <div class="mini-item"><label>ps</label><input type="number" data-coin="ps" value="${char.coins.ps}" min="0"></div>
+          <div class="mini-item"><label>pe</label><input type="number" data-coin="pe" value="${char.coins.pe}" min="0"></div>
+          <div class="mini-item"><label>po</label><input type="number" data-coin="po" value="${char.coins.po}" min="0"></div>
+          <div class="mini-item"><label>pp</label><input type="number" data-coin="pp" value="${char.coins.pp}" min="0"></div>
+        </div>
+      </div>
+
+      <div class="sheet-section">
         <p class="eyebrow">inventario y equipo</p>
         <div class="inv-list"></div>
         <button class="add-inv-btn" type="button">+ añadir objeto</button>
@@ -2103,6 +2425,12 @@ function renderCharacters(){
         char.attrs[el.dataset.attr] = el.value === "" ? "" : Number(el.value);
         card.querySelector(`[data-mod-for="${el.dataset.attr}"]`).textContent = hasVal(char.attrs[el.dataset.attr]) ? fmtMod(mod(char.attrs[el.dataset.attr])) : "—";
         refreshDerivedMods(card, char);
+      });
+    });
+    // monedas
+    card.querySelectorAll("[data-coin]").forEach(el => {
+      el.addEventListener("input", () => {
+        char.coins[el.dataset.coin] = el.value === "" ? "" : Number(el.value);
       });
     });
     // salvaciones
@@ -2512,6 +2840,8 @@ if(autosaved){
 }
 
 renderPunishmentList();
+renderEquipCategoryFilters();
+renderEquipment();
 renderVillainCases();
 document.getElementById("addVillainCaseBtn").addEventListener("click", addVillainCase);
 document.getElementById("rollVillainCaseBtn").addEventListener("click", rollVillainCase);
@@ -2826,6 +3156,24 @@ document.getElementById("tensionToggleCollapse").addEventListener("click", () =>
   btn.textContent = body.hidden ? "+" : "–";
   if(!body.hidden) document.getElementById("tensionNotifyDot").classList.remove("show");
 });
+
+// ocultar/mostrar el reloj de tensión entero (p.ej. cuando ya no haga falta tras la sesión 1)
+const TENSION_HIDDEN_KEY = "mesaTensionHidden_v1";
+function setTensionHidden(hidden){
+  const fab = document.getElementById("tensionFab");
+  const showBtn = document.getElementById("tensionShowBtn");
+  fab.style.display = hidden ? "none" : "";
+  showBtn.style.display = hidden ? "" : "none";
+  try{ localStorage.setItem(TENSION_HIDDEN_KEY, hidden ? "1" : "0"); }catch(err){}
+}
+document.getElementById("tensionHideBtn").addEventListener("click", () => {
+  if(!confirm("¿Ocultar el reloj de tensión? Puedes volver a mostrarlo cuando quieras con el botón que aparecerá abajo a la izquierda.")) return;
+  setTensionHidden(true);
+});
+document.getElementById("tensionShowBtn").addEventListener("click", () => setTensionHidden(false));
+try{
+  if(localStorage.getItem(TENSION_HIDDEN_KEY) === "1") setTensionHidden(true);
+}catch(err){}
 
 // --- llamar al guardia (50% pasa de vosotros / 50% viene: 25% feliz, 75% cabreado) ---
 document.getElementById("tensionCallGuardBtn").addEventListener("click", () => {
