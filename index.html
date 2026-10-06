@@ -882,7 +882,7 @@
       <h2>Guardar y cargar desde la nube</h2>
       <p class="body-text">Guarda puntos de partida directamente en tu repositorio de GitHub, con fecha y hora, para poder continuar desde cualquier dispositivo sin pasarte archivos a mano. Necesitas un <strong>token de acceso personal</strong> de GitHub con permiso de escritura sobre tu repositorio — se guarda solo en este navegador, nunca se sube a ningún sitio ni queda en el código de la página.</p>
       <div class="identity-row">
-        <div><label>Usuario/repositorio</label><input type="text" id="ghRepoInput" placeholder="usuario/repositorio"></div>
+        <div><label>Usuario/repositorio</label><input type="text" id="ghRepoInput" placeholder="usuario/repositorio" value="fenix16345/Mesafinal"></div>
         <div><label>Token de acceso personal</label><input type="password" id="ghTokenInput" placeholder="ghp_..."></div>
       </div>
       <button class="add-btn" id="ghSaveBtn" type="button">guardar en la nube (nuevo punto)</button>
@@ -2838,7 +2838,8 @@ function ghRepoInput(){ return document.getElementById("ghRepoInput"); }
 function ghTokenInput(){ return document.getElementById("ghTokenInput"); }
 function ghLoadSettings(){
   try{
-    ghRepoInput().value = localStorage.getItem(GH_REPO_KEY) || "";
+    const savedRepo = localStorage.getItem(GH_REPO_KEY);
+    if(savedRepo) ghRepoInput().value = savedRepo;
     ghTokenInput().value = localStorage.getItem(GH_TOKEN_KEY) || "";
   }catch(err){}
 }
