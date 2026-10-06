@@ -877,6 +877,20 @@
       </div>
       <p class="save-note" id="saveNote"></p>
     </div>
+    <div class="card">
+      <p class="eyebrow">sincronizar con GitHub (opcional)</p>
+      <h2>Guardar y cargar desde la nube</h2>
+      <p class="body-text">Guarda puntos de partida directamente en tu repositorio de GitHub, con fecha y hora, para poder continuar desde cualquier dispositivo sin pasarte archivos a mano. Necesitas un <strong>token de acceso personal</strong> de GitHub con permiso de escritura sobre tu repositorio — se guarda solo en este navegador, nunca se sube a ningún sitio ni queda en el código de la página.</p>
+      <div class="identity-row">
+        <div><label>Usuario/repositorio</label><input type="text" id="ghRepoInput" placeholder="usuario/repositorio"></div>
+        <div><label>Token de acceso personal</label><input type="password" id="ghTokenInput" placeholder="ghp_..."></div>
+      </div>
+      <button class="add-btn" id="ghSaveBtn" type="button">guardar en la nube (nuevo punto)</button>
+      <p class="tension-result" id="ghSaveResult"></p>
+      <p class="eyebrow" style="margin-top:16px;">puntos guardados en GitHub</p>
+      <button class="ctrl-btn" id="ghRefreshBtn" type="button">actualizar lista</button>
+      <div id="ghSaveList" style="margin-top:10px;"></div>
+    </div>
   </section>
 </div>
 
@@ -2814,6 +2828,150 @@ document.getElementById("newGameBtn").addEventListener("click", () => {
   try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
   location.reload();
 });
+
+// --- sincronizar con GitHub (puntos de guardado con fecha/hora en el propio repo) ---
+// El token NUNCA se escribe en el código ni se sube a ningún sitio: vive solo en el
+// localStorage de cada navegador, igual que el autoguardado.
+const GH_TOKEN_KEY = "mesaGhToken_v1";
+const GH_REPO_KEY = "mesaGhRepo_v1";
+function ghRepoInput(){ return document.getElementById("ghRepoInput"); }
+function ghTokenInput(){ return document.getElementById("ghTokenInput"); }
+function ghLoadSettings(){
+  try{
+    ghRepoInput().value = localStorage.getItem(GH_REPO_KEY) || "";
+    ghTokenInput().value = localStorage.getItem(GH_TOKEN_KEY) || "";
+  }catch(err){}
+}
+function ghSaveSettings(){
+  try{
+    localStorage.setItem(GH_REPO_KEY, ghRepoInput().value.trim());
+    localStorage.setItem(GH_TOKEN_KEY, ghTokenInput().value.trim());
+  }catch(err){}
+}
+function ghHeaders(){
+  const token = ghTokenInput().value.trim();
+  const h = { "Accept": "application/vnd.github+json" };
+  if(token) h["Authorization"] = "Bearer " + token;
+  return h;
+}
+function ghRepoParts(){
+  const v = ghRepoInput().value.trim();
+  const parts = v.split("/").map(p => p.trim()).filter(Boolean);
+  return { owner: parts[0], repo: parts[1] };
+}
+function ghPad(n){ return String(n).padStart(2, "0"); }
+function utf8ToBase64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function base64ToUtf8(b64){ return decodeURIComponent(escape(atob(b64))); }
+function ghTimestampName(){
+  const d = new Date();
+  const stamp = `${d.getFullYear()}-${ghPad(d.getMonth()+1)}-${ghPad(d.getDate())}_${ghPad(d.getHours())}${ghPad(d.getMinutes())}${ghPad(d.getSeconds())}`;
+  return { path: `saves/${stamp}.json`, label: stamp.replace("_", " ") };
+}
+async function ghSaveToCloud(){
+  ghSaveSettings();
+  const resultEl = document.getElementById("ghSaveResult");
+  const { owner, repo } = ghRepoParts();
+  if(!owner || !repo){ resultEl.textContent = "Pon el repositorio como usuario/repositorio."; return; }
+  const token = ghTokenInput().value.trim();
+  if(!token){ resultEl.textContent = "Hace falta un token de acceso personal para guardar."; return; }
+  const { path, label } = ghTimestampName();
+  resultEl.textContent = "Guardando...";
+  try{
+    const content = utf8ToBase64(JSON.stringify(state, null, 2));
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()),
+      body: JSON.stringify({ message: "Punto de guardado: " + label, content })
+    });
+    if(!res.ok){
+      const err = await res.json().catch(() => ({}));
+      resultEl.textContent = "Error al guardar (" + res.status + "): " + (err.message || "revisa el token/repositorio.");
+      return;
+    }
+    resultEl.textContent = "Guardado en la nube correctamente (" + label + ").";
+    ghRefreshSaveList();
+  }catch(err){
+    resultEl.textContent = "No se pudo conectar con GitHub.";
+  }
+}
+async function ghRefreshSaveList(){
+  ghSaveSettings();
+  const listEl = document.getElementById("ghSaveList");
+  const { owner, repo } = ghRepoParts();
+  if(!owner || !repo){ listEl.innerHTML = "<p class=\"equip-empty\">Pon primero el repositorio (usuario/repositorio).</p>"; return; }
+  listEl.innerHTML = "<p class=\"equip-empty\">Cargando...</p>";
+  try{
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/saves`, { headers: ghHeaders() });
+    if(res.status === 404){ listEl.innerHTML = "<p class=\"equip-empty\">Todavía no hay puntos guardados en la nube.</p>"; return; }
+    if(!res.ok){ listEl.innerHTML = "<p class=\"equip-empty\">No se pudo leer la lista (revisa el token/repositorio).</p>"; return; }
+    const files = await res.json();
+    const jsonFiles = (Array.isArray(files) ? files : []).filter(f => f.name.endsWith(".json")).sort((a, b) => b.name.localeCompare(a.name));
+    if(!jsonFiles.length){ listEl.innerHTML = "<p class=\"equip-empty\">Todavía no hay puntos guardados en la nube.</p>"; return; }
+    listEl.innerHTML = "";
+    jsonFiles.forEach(f => {
+      const label = f.name.replace(".json", "").replace("_", " ");
+      const row = document.createElement("div");
+      row.className = "equip-row";
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "equip-name";
+      nameSpan.textContent = label;
+      const btnWrap = document.createElement("div");
+      const loadBtn = document.createElement("button");
+      loadBtn.type = "button"; loadBtn.className = "ctrl-btn"; loadBtn.textContent = "cargar";
+      loadBtn.style.marginRight = "6px";
+      loadBtn.addEventListener("click", () => ghLoadFromCloud(f.path, label));
+      const delBtn = document.createElement("button");
+      delBtn.type = "button"; delBtn.className = "ctrl-btn"; delBtn.textContent = "borrar";
+      delBtn.addEventListener("click", () => ghDeleteFromCloud(f.path, f.sha));
+      btnWrap.appendChild(loadBtn);
+      btnWrap.appendChild(delBtn);
+      row.appendChild(nameSpan);
+      row.appendChild(btnWrap);
+      listEl.appendChild(row);
+    });
+  }catch(err){
+    listEl.innerHTML = "<p class=\"equip-empty\">No se pudo conectar con GitHub.</p>";
+  }
+}
+async function ghLoadFromCloud(path, label){
+  const resultEl = document.getElementById("ghSaveResult");
+  const { owner, repo } = ghRepoParts();
+  if(!confirm(`¿Cargar el punto de guardado "${label}"? Esto reemplaza la partida actual de este navegador.`)) return;
+  resultEl.textContent = "Cargando...";
+  try{
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { headers: ghHeaders() });
+    if(!res.ok){ resultEl.textContent = "No se pudo cargar ese punto de guardado."; return; }
+    const data = await res.json();
+    const jsonText = base64ToUtf8(data.content.replace(/\n/g, ""));
+    const loaded = JSON.parse(jsonText);
+    applyLoadedState(loaded);
+    doAutosave();
+    resultEl.textContent = "Partida cargada desde la nube (" + label + ").";
+  }catch(err){
+    resultEl.textContent = "Ese archivo no es una partida válida o hubo un error de conexión.";
+  }
+}
+async function ghDeleteFromCloud(path, sha){
+  if(!confirm("¿Borrar este punto de guardado de GitHub? No se puede deshacer.")) return;
+  const resultEl = document.getElementById("ghSaveResult");
+  const { owner, repo } = ghRepoParts();
+  const token = ghTokenInput().value.trim();
+  if(!token){ alert("Hace falta el token para borrar."); return; }
+  try{
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method: "DELETE",
+      headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()),
+      body: JSON.stringify({ message: "Borrar punto de guardado " + path, sha })
+    });
+    if(res.ok){ ghRefreshSaveList(); } else { resultEl.textContent = "No se pudo borrar ese punto de guardado."; }
+  }catch(err){
+    resultEl.textContent = "No se pudo conectar con GitHub.";
+  }
+}
+document.getElementById("ghSaveBtn").addEventListener("click", ghSaveToCloud);
+document.getElementById("ghRefreshBtn").addEventListener("click", ghRefreshSaveList);
+ghLoadSettings();
+if(ghTokenInput().value && ghRepoInput().value) ghRefreshSaveList();
 
 let autosaved = null;
 try{
