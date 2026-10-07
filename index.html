@@ -245,6 +245,16 @@
     border:1px solid var(--border); border-radius:4px; padding:9px 12px; margin:0 0 16px; line-height:1.6; }
   .equip-currency-note strong{ color: var(--ink); }
 
+  /* --- bestiario --- */
+  .beast-row{ padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .beast-row:last-child{ border-bottom:none; }
+  .beast-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  .beast-name{ color: var(--ink); font-size:15px; }
+  .beast-cr{ font-family:'Space Grotesk', sans-serif; color: var(--torch); font-size:12px; white-space:nowrap; }
+  .beast-stats{ color: var(--ink-dim); font-size:12px; margin-top:2px; font-variant-numeric: tabular-nums; }
+  .beast-traits{ color: var(--ink-dim); font-size:11px; margin-top:3px; font-style: italic; }
+  .beast-notas{ color: var(--ink); font-size:12px; margin-top:4px; line-height:1.5; }
+
   .save-row{ display:flex; gap:10px; flex-wrap:wrap; }
   .save-btn{ flex:1; font-family:'Space Grotesk', sans-serif; font-size:14px;
     background:
@@ -713,6 +723,7 @@
     <button data-tab="castigos">Castigos</button>
     <button data-tab="malos">Los malos</button>
     <button data-tab="objetos">Objetos</button>
+    <button data-tab="bestiario">Bestiario</button>
     <button data-tab="guardar">Guardar / cargar</button>
   </nav>
 
@@ -857,6 +868,20 @@
       </div>
       <div id="equipCategoryFilters" class="equip-cat-filters"></div>
       <div id="equipList"></div>
+    </div>
+  </section>
+
+  <!-- BESTIARIO -->
+  <section class="panel" id="tab-bestiario">
+    <div class="card">
+      <p class="eyebrow">bestiario de referencia</p>
+      <h2>Monstruos y criaturas (D&amp;D 5ª edición)</h2>
+      <p class="body-text">Estadísticas de combate rápidas de las criaturas más habituales: CA, puntos de vida, velocidad, resistencias/inmunidades y un resumen de sus ataques. No es el manual de monstruos completo — cubre lo más típico para no tener que parar la partida a buscarlo. Busca por nombre o filtra por tipo de criatura.</p>
+      <div class="filter-row">
+        <input type="text" id="bestiaryFilter" placeholder="Buscar criatura (ej. ogro, esqueleto, lobo...)">
+      </div>
+      <div id="bestiaryCategoryFilters" class="equip-cat-filters"></div>
+      <div id="bestiaryList"></div>
     </div>
   </section>
 
@@ -1059,46 +1084,46 @@ const skillDefs = [
 // --- tabla de objetos y precios (equipo estándar D&D 5ª edición, SRD) ---
 const equipmentData = [
   // Armas simples — cuerpo a cuerpo
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Clava", price: "1 ps", detail: "1d4 contundente · 2 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Daga", price: "2 po", detail: "1d4 perforante · sutil, ligera, arrojadiza (6/18m) · 1 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza grande (garrote)", price: "2 ps", detail: "1d8 contundente · a dos manos · 10 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hacha de mano", price: "5 po", detail: "1d6 cortante · ligera, arrojadiza (6/18m) · 2 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Jabalina", price: "5 ps", detail: "1d6 perforante · arrojadiza (9/36m) · 2 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Martillo ligero", price: "2 po", detail: "1d4 contundente · ligera, arrojadiza (6/18m) · 2 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza", price: "5 po", detail: "1d6 contundente · 4 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Bastón", price: "2 ps", detail: "1d6 contundente · versátil (1d8) · 4 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hoz", price: "1 po", detail: "1d4 cortante · ligera · 2 lb" },
-  { cat: "Armas simples (cuerpo a cuerpo)", name: "Lanza", price: "1 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 3 lb" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Clava", price: "1 ps", detail: "1d4 contundente · 2 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Daga", price: "2 po", detail: "1d4 perforante · sutil, ligera, arrojadiza (6/18m) · 1 lb · atr: Fuerza o Destreza (sutil)" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza grande (garrote)", price: "2 ps", detail: "1d8 contundente · a dos manos · 10 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hacha de mano", price: "5 po", detail: "1d6 cortante · ligera, arrojadiza (6/18m) · 2 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Jabalina", price: "5 ps", detail: "1d6 perforante · arrojadiza (9/36m) · 2 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Martillo ligero", price: "2 po", detail: "1d4 contundente · ligera, arrojadiza (6/18m) · 2 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Maza", price: "5 po", detail: "1d6 contundente · 4 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Bastón", price: "2 ps", detail: "1d6 contundente · versátil (1d8) · 4 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Hoz", price: "1 po", detail: "1d4 cortante · ligera · 2 lb · atr: Fuerza" },
+  { cat: "Armas simples (cuerpo a cuerpo)", name: "Lanza", price: "1 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 3 lb · atr: Fuerza" },
   // Armas simples — a distancia
-  { cat: "Armas simples (a distancia)", name: "Ballesta ligera", price: "25 po", detail: "1d8 perforante · munición (24/96m), recarga, a dos manos · 5 lb" },
-  { cat: "Armas simples (a distancia)", name: "Dardo", price: "5 pc", detail: "1d4 perforante · sutil, arrojadiza (6/18m)" },
-  { cat: "Armas simples (a distancia)", name: "Arco corto", price: "25 po", detail: "1d6 perforante · munición (24/96m), a dos manos · 2 lb" },
-  { cat: "Armas simples (a distancia)", name: "Honda", price: "1 po", detail: "1d4 contundente · munición (9/36m)" },
+  { cat: "Armas simples (a distancia)", name: "Ballesta ligera", price: "25 po", detail: "1d8 perforante · munición (24/96m), recarga, a dos manos · 5 lb · atr: Destreza" },
+  { cat: "Armas simples (a distancia)", name: "Dardo", price: "5 pc", detail: "1d4 perforante · sutil, arrojadiza (6/18m) · atr: Destreza" },
+  { cat: "Armas simples (a distancia)", name: "Arco corto", price: "25 po", detail: "1d6 perforante · munición (24/96m), a dos manos · 2 lb · atr: Destreza" },
+  { cat: "Armas simples (a distancia)", name: "Honda", price: "1 po", detail: "1d4 contundente · munición (9/36m) · atr: Destreza" },
   // Armas marciales — cuerpo a cuerpo
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha de batalla", price: "10 po", detail: "1d8 cortante · versátil (1d10) · 4 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mangual", price: "10 po", detail: "1d8 contundente · 2 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Guja (glaive)", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha grande", price: "30 po", detail: "1d12 cortante · pesada, a dos manos · 7 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mandoble", price: "50 po", detail: "2d6 cortante · pesada, a dos manos · 6 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Alabarda", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lanza de caballería", price: "10 po", detail: "1d12 perforante · alcance, especial · 6 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada larga", price: "15 po", detail: "1d8 cortante · versátil (1d10) · 3 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mazo", price: "10 po", detail: "2d6 contundente · pesada, a dos manos · 10 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lucero del alba", price: "15 po", detail: "1d8 perforante · 4 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pica", price: "5 po", detail: "1d10 perforante · pesada, alcance, a dos manos · 18 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Estoque", price: "25 po", detail: "1d8 perforante · sutil · 2 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Cimitarra", price: "25 po", detail: "1d6 cortante · sutil, ligera · 3 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada corta", price: "10 po", detail: "1d6 perforante · sutil, ligera · 2 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Tridente", price: "5 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 4 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pico de guerra", price: "5 po", detail: "1d8 perforante · 2 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Martillo de guerra", price: "15 po", detail: "1d8 contundente · versátil (1d10) · 2 lb" },
-  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Látigo", price: "2 po", detail: "1d4 cortante · sutil, alcance · 3 lb" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha de batalla", price: "10 po", detail: "1d8 cortante · versátil (1d10) · 4 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mangual", price: "10 po", detail: "1d8 contundente · 2 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Guja (glaive)", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Hacha grande", price: "30 po", detail: "1d12 cortante · pesada, a dos manos · 7 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mandoble", price: "50 po", detail: "2d6 cortante · pesada, a dos manos · 6 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Alabarda", price: "20 po", detail: "1d10 cortante · pesada, alcance, a dos manos · 6 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lanza de caballería", price: "10 po", detail: "1d12 perforante · alcance, especial · 6 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada larga", price: "15 po", detail: "1d8 cortante · versátil (1d10) · 3 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Mazo", price: "10 po", detail: "2d6 contundente · pesada, a dos manos · 10 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Lucero del alba", price: "15 po", detail: "1d8 perforante · 4 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pica", price: "5 po", detail: "1d10 perforante · pesada, alcance, a dos manos · 18 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Estoque", price: "25 po", detail: "1d8 perforante · sutil · 2 lb · atr: Fuerza o Destreza (sutil)" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Cimitarra", price: "25 po", detail: "1d6 cortante · sutil, ligera · 3 lb · atr: Fuerza o Destreza (sutil)" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Espada corta", price: "10 po", detail: "1d6 perforante · sutil, ligera · 2 lb · atr: Fuerza o Destreza (sutil)" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Tridente", price: "5 po", detail: "1d6 perforante · arrojadiza (6/18m), versátil (1d8) · 4 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Pico de guerra", price: "5 po", detail: "1d8 perforante · 2 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Martillo de guerra", price: "15 po", detail: "1d8 contundente · versátil (1d10) · 2 lb · atr: Fuerza" },
+  { cat: "Armas marciales (cuerpo a cuerpo)", name: "Látigo", price: "2 po", detail: "1d4 cortante · sutil, alcance · 3 lb · atr: Fuerza o Destreza (sutil)" },
   // Armas marciales — a distancia
-  { cat: "Armas marciales (a distancia)", name: "Cerbatana", price: "10 po", detail: "1 perforante · munición (7.5/30m), recarga · 1 lb" },
-  { cat: "Armas marciales (a distancia)", name: "Ballesta de mano", price: "75 po", detail: "1d6 perforante · munición (9/36m), ligera, recarga · 3 lb" },
-  { cat: "Armas marciales (a distancia)", name: "Ballesta pesada", price: "50 po", detail: "1d10 perforante · munición (30/120m), pesada, recarga, a dos manos · 18 lb" },
-  { cat: "Armas marciales (a distancia)", name: "Arco largo", price: "50 po", detail: "1d8 perforante · munición (45/180m), pesada, a dos manos · 2 lb" },
-  { cat: "Armas marciales (a distancia)", name: "Red", price: "1 po", detail: "especial · arrojadiza (1.5/4.5m) · 3 lb" },
+  { cat: "Armas marciales (a distancia)", name: "Cerbatana", price: "10 po", detail: "1 perforante · munición (7.5/30m), recarga · 1 lb · atr: Destreza" },
+  { cat: "Armas marciales (a distancia)", name: "Ballesta de mano", price: "75 po", detail: "1d6 perforante · munición (9/36m), ligera, recarga · 3 lb · atr: Destreza" },
+  { cat: "Armas marciales (a distancia)", name: "Ballesta pesada", price: "50 po", detail: "1d10 perforante · munición (30/120m), pesada, recarga, a dos manos · 18 lb · atr: Destreza" },
+  { cat: "Armas marciales (a distancia)", name: "Arco largo", price: "50 po", detail: "1d8 perforante · munición (45/180m), pesada, a dos manos · 2 lb · atr: Destreza" },
+  { cat: "Armas marciales (a distancia)", name: "Red", price: "1 po", detail: "especial · arrojadiza (1.5/4.5m) · 3 lb · atr: Destreza" },
   // Armadura ligera
   { cat: "Armadura ligera", name: "Acolchada", price: "5 po", detail: "CA 11 + mod. Des · desventaja en Sigilo · 8 lb" },
   { cat: "Armadura ligera", name: "Cuero", price: "10 po", detail: "CA 11 + mod. Des · 10 lb" },
@@ -1271,6 +1296,62 @@ const equipmentData = [
   { cat: "Monturas y vehículos", name: "Barcaza", price: "3000 po", detail: "" },
   { cat: "Monturas y vehículos", name: "Drakar (longship)", price: "10000 po", detail: "" }
 ];
+
+// --- bestiario de referencia (criaturas habituales, valores estándar D&D 5ª edición) ---
+const bestiaryData = [
+  // Bestias y alimañas
+  { cat: "Bestias", name: "Rata", cr: "0", ac: "10", hp: "1 (1d4-1)", speed: "9 m", traits: "", notas: "Mordisco 1 perforante." },
+  { cat: "Bestias", name: "Rata gigante", cr: "1/8", ac: "12", hp: "7 (2d6)", speed: "9 m", traits: "", notas: "Mordisco 1d4+2 perforante. Ventaja si hay un aliado a menos de 1,5 m del objetivo." },
+  { cat: "Bestias", name: "Cuervo", cr: "0", ac: "12", hp: "1 (1d4-1)", speed: "3 m, vuelo 15 m", traits: "", notas: "Mordisco 1 perforante. Imita sonidos simples." },
+  { cat: "Bestias", name: "Murciélago", cr: "0", ac: "12", hp: "1 (1d4-1)", speed: "1,5 m, vuelo 9 m", traits: "", notas: "Mordisco 1 perforante. Ecolocalización, ciego." },
+  { cat: "Bestias", name: "Araña", cr: "0", ac: "12", hp: "1 (1d4-1)", speed: "6 m, trepar 6 m", traits: "", notas: "Mordisco 1 perforante + veneno (salv. Con CD9, 2d4 si falla)." },
+  { cat: "Bestias", name: "Araña gigante", cr: "1", ac: "14", hp: "26 (4d10+4)", speed: "9 m, trepar 9 m", traits: "", notas: "Mordisco 1d8+3 perforante + veneno (3d8 si falla salv. Con CD11). Telaraña a distancia (CD12 para escapar)." },
+  { cat: "Bestias", name: "Lobo", cr: "1/4", ac: "13", hp: "11 (2d8+2)", speed: "12 m", traits: "", notas: "Mordisco 2d4+2 perforante; si impacta, derriba (salv. Fue CD11). Táctica de manada (ventaja si hay aliado cerca)." },
+  { cat: "Bestias", name: "Lobo huargo", cr: "1", ac: "14", hp: "37 (5d10+10)", speed: "15 m", traits: "", notas: "Mordisco 2d6+3 perforante; si impacta, derriba (salv. Fue CD13). Táctica de manada." },
+  { cat: "Bestias", name: "Oso negro", cr: "1/2", ac: "11", hp: "19 (3d8+6)", speed: "12 m, trepar 9 m, nadar 9 m", traits: "", notas: "Multiataque: garra 1d6+3 y mordisco 1d6+3." },
+  { cat: "Bestias", name: "Oso pardo", cr: "1", ac: "11", hp: "34 (4d10+12)", speed: "12 m, nadar 9 m", traits: "", notas: "Multiataque: 2 garras 1d8+5 y mordisco 1d8+5." },
+  { cat: "Bestias", name: "Mastín", cr: "1/8", ac: "12", hp: "5 (1d8+1)", speed: "12 m", traits: "", notas: "Mordisco 1d4+1 perforante; si impacta, derriba (salv. Fue CD11)." },
+  { cat: "Bestias", name: "Víbora venenosa", cr: "1/4", ac: "14", hp: "11 (2d8+2)", speed: "9 m, nadar 9 m", traits: "", notas: "Mordisco 1 perforante + veneno (3d6 si falla salv. Con CD10)." },
+  { cat: "Bestias", name: "Cocodrilo gigante", cr: "5", ac: "14", hp: "85 (9d12+27)", speed: "9 m, nadar 15 m", traits: "resiste nada reseñable", notas: "Mordisco 3d10+6 perforante + apresa (CD16 para escapar). Aguanta la respiración 30 min." },
+  { cat: "Bestias", name: "Grifo", cr: "2", ac: "12", hp: "59 (7d10+21)", speed: "9 m, vuelo 24 m", traits: "", notas: "Multiataque: garra 2d6+4 y mordisco 1d4+4+1d6." },
+  { cat: "Bestias", name: "Owlbear (oso-búho)", cr: "3", ac: "13", hp: "59 (7d10+21)", speed: "12 m", traits: "", notas: "Multiataque: garra 1d10+5 y pico 1d10+5." },
+  { cat: "Bestias", name: "Centauro", cr: "2", ac: "12", hp: "45 (6d10+12)", speed: "15 m", traits: "", notas: "Multiataque: 2 pezuñas 2d6+3 o lanza/arco." },
+  // Humanoides
+  { cat: "Humanoides", name: "Bandido", cr: "1/8", ac: "12", hp: "11 (2d8+2)", speed: "9 m", traits: "", notas: "Cimitarra 1d6+1 cortante o ballesta ligera 1d8+1 perforante." },
+  { cat: "Humanoides", name: "Capitán bandido", cr: "2", ac: "15", hp: "65 (10d8+20)", speed: "9 m", traits: "", notas: "Multiataque: 3 ataques (2 espada corta, 1 daga). Daga a distancia." },
+  { cat: "Humanoides", name: "Matón (thug)", cr: "1/2", ac: "11", hp: "32 (5d8+10)", speed: "9 m", traits: "", notas: "Multiataque: 2 golpes de maza 1d6+2. Ventaja si el objetivo está herido." },
+  { cat: "Humanoides", name: "Guardia", cr: "1/8", ac: "16", hp: "11 (2d8+2)", speed: "9 m", traits: "", notas: "Lanza 1d6+1 (o 1d8+1 a dos manos) o ballesta ligera 1d8+1." },
+  { cat: "Humanoides", name: "Veterano", cr: "3", ac: "17", hp: "58 (9d8+18)", speed: "9 m", traits: "", notas: "Multiataque: 2 ataques de espada larga 2d4+3, o 2 de ballesta de mano 1d6+3." },
+  { cat: "Humanoides", name: "Cultista", cr: "1/8", ac: "12", hp: "9 (2d8)", speed: "9 m", traits: "", notas: "Cimitarra 1d6+1 cortante. Pacto oscuro (ventaja en salv. contra miedo cerca de aliados)." },
+  { cat: "Humanoides", name: "Noble", cr: "1/8", ac: "15", hp: "9 (2d8)", speed: "9 m", traits: "", notas: "Espada corta 1d6+1 perforante. Experto en persuasión/engaño." },
+  { cat: "Humanoides", name: "Trasgo/goblin", cr: "1/4", ac: "15", hp: "7 (2d6)", speed: "9 m", traits: "", notas: "Cimitarra 1d6+2 o arco corto 1d6+2. Escabullirse (acción adicional para esconderse)." },
+  { cat: "Humanoides", name: "Jefe goblin", cr: "1", ac: "17", hp: "21 (6d6)", speed: "9 m", traits: "", notas: "Multiataque: 2 ataques de mangual 1d8+2 (o 1 si usa el látigo)." },
+  { cat: "Humanoides", name: "Hobgoblin", cr: "1/2", ac: "18", hp: "11 (2d8+2)", speed: "9 m", traits: "", notas: "Espada larga 1d8+2 o arco largo 1d8+2. Táctica marcial (ventaja si 2+ aliados cerca)." },
+  { cat: "Humanoides", name: "Osgo (bugbear)", cr: "1", ac: "16", hp: "27 (5d8+5)", speed: "9 m", traits: "", notas: "Morningstar 2d8+2 (alcance 3 m) o jabalina 1d6+2. Emboscada (ventaja al atacar por sorpresa)." },
+  { cat: "Humanoides", name: "Orco", cr: "1/2", ac: "13", hp: "15 (2d8+6)", speed: "12 m", traits: "", notas: "Hacha grande 1d12+3 cortante o jabalina 1d6+3. Agresivo (mov. adicional hacia un enemigo)." },
+  { cat: "Humanoides", name: "Kobold", cr: "1/8", ac: "12", hp: "5 (2d6-2)", speed: "9 m", traits: "", notas: "Daga 1d4-1 o honda 1d4-1. Táctica de manada (ventaja si hay aliado cerca del objetivo)." },
+  { cat: "Humanoides", name: "Gnoll", cr: "1/2", ac: "15", hp: "22 (5d8)", speed: "9 m", traits: "", notas: "Mordisco 1d4 o lanza 1d6+2 (1d8+2 a dos manos) o arco corto 1d6+2." },
+  { cat: "Humanoides", name: "Minotauro", cr: "3", ac: "14", hp: "76 (9d10+27)", speed: "12 m", traits: "", notas: "Cuernada 2d8+4 (si se mueve 3+ m antes) o hacha grande 2d6+4. Sentido del laberinto." },
+  // Gigantes
+  { cat: "Gigantes", name: "Ogro", cr: "2", ac: "11", hp: "59 (7d10+21)", speed: "12 m", traits: "", notas: "Garrote grande 2d8+4 contundente, o jabalina 2d6+4." },
+  { cat: "Gigantes", name: "Troll", cr: "5", ac: "15", hp: "84 (8d10+40)", speed: "12 m", traits: "resiste nada · vulnerable a fuego y ácido", notas: "Multiataque: mordisco 1d6+4 y 2 garras 2d6+4 cada una. Regeneración 10 PV/turno salvo fuego/ácido." },
+  { cat: "Gigantes", name: "Gigante de las colinas", cr: "5", ac: "13", hp: "105 (10d12+40)", speed: "12 m", traits: "", notas: "Multiataque: 2 golpes de garrote 3d8+6." },
+  // No muertos
+  { cat: "No muertos", name: "Esqueleto", cr: "1/4", ac: "13", hp: "13 (2d8+4)", speed: "9 m", traits: "vulnerable a contundente", notas: "Espada corta 1d6+2 perforante o arco corto 1d6+2." },
+  { cat: "No muertos", name: "Zombi", cr: "1/4", ac: "8", hp: "22 (3d8+9)", speed: "6 m", traits: "fortaleza de los no-muertos (al llegar a 0 PV, tira Con CD5+daño para quedarse a 1 PV)", notas: "Puño cerrado 1d6+1 contundente." },
+  { cat: "No muertos", name: "Ghoul", cr: "1", ac: "12", hp: "22 (5d8)", speed: "9 m", traits: "inmune a veneno · inmune a envenenado", notas: "Mordisco 2d6+2 perforante; 2 garras 2d4+2, si impactan paralizan (salv. Con CD10, excepto élfos)." },
+  { cat: "No muertos", name: "Espectro", cr: "1", ac: "12", hp: "22 (5d8)", speed: "vuelo 15 m (flotando)", traits: "resiste ácido/fuego/rayo/trueno/contundente-perforante-cortante no mágico · inmune a necrótico y veneno · inmune a agarrado, aterrado, derribado, envenenado, paralizado, apresado", notas: "Toque vital 3d6 necrótico + reduce PV máx igual al daño." },
+  { cat: "No muertos", name: "Momia", cr: "3", ac: "11", hp: "58 (9d8+18)", speed: "6 m", traits: "resiste contundente/perforante/cortante no mágico · inmune a necrótico y veneno", notas: "Puño amortajado 2d6+3 contundente + maldición de momia; mirada aterradora (salv. Sab CD11)." },
+  { cat: "No muertos", name: "Fantasma", cr: "4", ac: "11", hp: "45 (10d8)", speed: "0, vuelo 12 m (flotando)", traits: "resiste ácido/fuego/rayo/trueno/contundente-perforante-cortante no mágico · inmune a frío/necrótico/veneno · inmune a agarrado, aterrado, apresado, paralizado, petrificado, derribado, inconsciente", traitsShort: "", notas: "Toque corruptor 4d6+poss. envejecer; posesión de un humanoide." },
+  { cat: "No muertos", name: "Vampiro espectro", cr: "5", ac: "15", hp: "82 (11d8+33)", speed: "12 m, trepar 12 m", traits: "resiste necrótico · resiste contundente/perforante/cortante no mágico", notas: "Multiataque: 2 garras 1d8+3; mordisco 1d6+3+2d6 necrótico y cura al vampiro." },
+  // Elementales y dragones
+  { cat: "Elementales", name: "Elemental de fuego", cr: "5", ac: "13", hp: "102 (12d10+36)", speed: "15 m", traits: "inmune a fuego, veneno · vulnerable a frío", notas: "Multiataque: 2 toques 2d6+3 fuego; prende fuego a objetivos inflamables." },
+  { cat: "Elementales", name: "Elemental de agua", cr: "5", ac: "14", hp: "114 (12d10+48)", speed: "9 m, nadar 27 m", traits: "inmune a veneno", notas: "Multiataque: 2 golpes 2d8+4 contundente; puede apresar y ahogar." },
+  { cat: "Dragones", name: "Dragón joven rojo", cr: "10", ac: "18", hp: "178 (17d10+85)", speed: "12 m, trepar 12 m, vuelo 24 m", traits: "inmune a fuego", notas: "Multiataque: mordisco 2d10+6+1d6 fuego y 2 garras 2d6+6; aliento de fuego (línea 9 m, 16d6 fuego, salv. Des CD17)." },
+  { cat: "Otros", name: "Hidra", cr: "8", ac: "15", hp: "172 (15d12+75)", speed: "9 m, nadar 9 m", traits: "", notas: "Multiataque: 5 mordiscos 1d10+4 (uno por cabeza). Al recibir daño cortante de 25+, pierde una cabeza y le salen dos." },
+  { cat: "Otros", name: "Arpía", cr: "1", ac: "11", hp: "38 (7d8+7)", speed: "6 m, vuelo 12 m", traits: "", notas: "Multiataque: 2 garras 2d4+2; canto hechizante (salv. Sab CD11 o queda hechizado)." }
+];
+
 
 // --- tabs ---
 document.querySelectorAll("nav.tabs button").forEach(btn => {
@@ -2048,6 +2129,56 @@ function renderEquipment(){
   wrap.innerHTML = html;
 }
 document.getElementById("equipFilter").addEventListener("input", renderEquipment);
+
+// --- bestiario ---
+let bestiaryActiveCat = "";
+function renderBestiaryCategoryFilters(){
+  const wrap = document.getElementById("bestiaryCategoryFilters");
+  const cats = [...new Set(bestiaryData.map(it => it.cat))];
+  wrap.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.type = "button";
+  allBtn.className = "equip-cat-btn" + (bestiaryActiveCat === "" ? " active" : "");
+  allBtn.textContent = "todas";
+  allBtn.addEventListener("click", () => { bestiaryActiveCat = ""; renderBestiaryCategoryFilters(); renderBestiary(); });
+  wrap.appendChild(allBtn);
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "equip-cat-btn" + (bestiaryActiveCat === cat ? " active" : "");
+    btn.textContent = cat;
+    btn.addEventListener("click", () => { bestiaryActiveCat = (bestiaryActiveCat === cat ? "" : cat); renderBestiaryCategoryFilters(); renderBestiary(); });
+    wrap.appendChild(btn);
+  });
+}
+function renderBestiary(){
+  const wrap = document.getElementById("bestiaryList");
+  const q = (document.getElementById("bestiaryFilter").value || "").trim().toLowerCase();
+  const items = bestiaryData.filter(it =>
+    (!bestiaryActiveCat || it.cat === bestiaryActiveCat) &&
+    (!q || it.name.toLowerCase().includes(q) || it.notas.toLowerCase().includes(q))
+  );
+  if(items.length === 0){
+    wrap.innerHTML = '<p class="equip-empty">No se ha encontrado ninguna criatura con ese filtro.</p>';
+    return;
+  }
+  let html = "";
+  let lastCat = null;
+  items.forEach(it => {
+    if(it.cat !== lastCat){
+      html += `<p class="equip-group-title">${escapeHtml(it.cat)}</p>`;
+      lastCat = it.cat;
+    }
+    html += `<div class="beast-row">
+      <div class="beast-head"><span class="beast-name">${escapeHtml(it.name)}</span><span class="beast-cr">FR ${escapeHtml(it.cr)}</span></div>
+      <div class="beast-stats">CA ${escapeHtml(it.ac)} · PV ${escapeHtml(it.hp)} · Velocidad ${escapeHtml(it.speed)}</div>
+      ${it.traits ? `<div class="beast-traits">${escapeHtml(it.traits)}</div>` : ""}
+      ${it.notas ? `<div class="beast-notas">${escapeHtml(it.notas)}</div>` : ""}
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+document.getElementById("bestiaryFilter").addEventListener("input", renderBestiary);
 
 // --- dado de castigos ---
 function renderPunishmentList(){
@@ -3001,6 +3132,8 @@ if(autosaved){
 renderPunishmentList();
 renderEquipCategoryFilters();
 renderEquipment();
+renderBestiaryCategoryFilters();
+renderBestiary();
 renderVillainCases();
 document.getElementById("addVillainCaseBtn").addEventListener("click", addVillainCase);
 document.getElementById("rollVillainCaseBtn").addEventListener("click", rollVillainCase);
