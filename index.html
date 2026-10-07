@@ -3326,7 +3326,6 @@ function setTensionHidden(hidden){
   try{ localStorage.setItem(TENSION_HIDDEN_KEY, hidden ? "1" : "0"); }catch(err){}
 }
 document.getElementById("tensionHideBtn").addEventListener("click", () => {
-  if(!confirm("¿Ocultar el reloj de tensión? Puedes volver a mostrarlo cuando quieras con el botón que aparecerá abajo a la izquierda.")) return;
   setTensionHidden(true);
 });
 document.getElementById("tensionShowBtn").addEventListener("click", () => setTensionHidden(false));
