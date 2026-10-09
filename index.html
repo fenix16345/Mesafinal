@@ -1013,10 +1013,36 @@ const nodes = {
       { label: "No se lo dais", to: "ratas_atacan" }
     ]
   },
-  ratas_ayudan: { eyebrow: "final de rama", title: "Las ratas ayudan",
-    text: ["Las ratas devoran el pan y, a cambio, deciden ayudaros."], ending: true },
-  ratas_atacan: { eyebrow: "final de rama", title: "Las ratas atacan",
-    text: ["Al no recibir comida, las ratas se lanzan a por vosotros para conseguirla."], ending: true },
+  ratas_ayudan: {
+    eyebrow: "capítulo 4 — alivio en la celda", title: "Las ratas ayudan",
+    text: [
+      "Las ratas devoran el pan y, a cambio, deciden ayudaros. Seguís encerrados un tiempo, incómodos pero sin sobresaltos: el guardia empieza a tiraros más pan, suficiente para que también coman las ratas.",
+      "Los días pasan así hasta que, una mañana, la puerta de la celda se abre sin más explicación. Os dejan en libertad."
+    ],
+    choices: [ { label: "Salís de la prisión", to: "hombre_misterioso" } ]
+  },
+  hombre_misterioso: {
+    eyebrow: "capítulo 5 — el hombre misterioso", title: "Una invitación extraña",
+    text: [
+      "Nada más pisar la calle, un hombre de aspecto misterioso os aborda. No da su nombre, solo una frase: \"Venid a mi bar\".",
+      "Os guía por callejones hasta un local discreto. Dentro solo hay un camarero que no parece enterarse de nada de lo que pasa a su alrededor, y unas escaleras hacia una segunda planta.",
+      "El hombre sube delante de vosotros. Es ahí, en esa segunda planta, donde empieza a contaros de qué va realmente todo esto."
+    ],
+    ending: true
+  },
+  ratas_atacan: {
+    eyebrow: "rama — las ratas atacan", title: "Las ratas atacan",
+    text: ["Al no recibir comida, las ratas se lanzan a por vosotros para conseguirla."],
+    choices: [ { label: "Las ratas os devoran", to: "muerte_ratas" } ]
+  },
+  muerte_ratas: {
+    eyebrow: "final de rama", title: "Despertáis en el hospital",
+    text: [
+      "Las ratas, ya multiplicadas sin control, acaban con vosotros en la celda.",
+      "Abrís los ojos en una cama de hospital, con personajes nuevos. Lo que pasó en aquella celda ya es solo historia."
+    ],
+    ending: true
+  },
   pan_no_conseguido: {
     eyebrow: "capítulo 3 — sin pan", title: "No hay pan",
     text: ["No conseguís el mendrugo. Las ratas os miran con hambre. El guardia observa la escena entre risas y no hace nada."],
