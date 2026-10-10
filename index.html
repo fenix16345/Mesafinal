@@ -740,10 +740,6 @@
         <button class="ctrl-btn" id="restartBtn">reiniciar historia</button>
       </div>
     </div>
-    <div class="card log">
-      <p class="eyebrow">registro de la partida</p>
-      <div id="logList"></div>
-    </div>
   </section>
 
   <!-- PERSONAJES -->
@@ -1421,9 +1417,7 @@ function renderStory(){
     btn.textContent = choice.label;
     btn.addEventListener("click", () => {
       state.history.push(choice.to);
-      state.log.push(node.title + " → " + choice.label);
       renderStory();
-      renderLog();
     });
     choicesWrap.appendChild(btn);
   });
@@ -1448,20 +1442,6 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   state.history = ["inicio"];
   renderStory();
 });
-function renderLog(){
-  const wrap = document.getElementById("logList");
-  wrap.innerHTML = "";
-  if(state.log.length === 0){
-    wrap.innerHTML = '<p class="log-empty">Aún no hay decisiones registradas.</p>';
-    return;
-  }
-  state.log.forEach(entry => {
-    const div = document.createElement("div");
-    div.className = "log-entry";
-    div.textContent = entry;
-    wrap.appendChild(div);
-  });
-}
 
 // --- helpers de reglas ---
 function hasVal(v){ return v !== "" && v !== null && v !== undefined; }
@@ -2943,7 +2923,6 @@ function applyLoadedState(loaded){
   renderVillainCases();
   document.getElementById("villainCaseResult").innerHTML = "";
   renderStory();
-  renderLog();
   renderCharacters();
   renderSessions();
   renderNpcs();
@@ -3142,7 +3121,6 @@ if(autosaved){
   document.getElementById("saveNote").textContent = "Partida recuperada automáticamente de este navegador.";
 } else {
   renderStory();
-  renderLog();
   renderCharacters();
   renderSessions();
 
