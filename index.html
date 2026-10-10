@@ -1783,6 +1783,51 @@ function parseNivel20Sheet(items){
   return result;
 }
 
+// --- sonido de dados (generado al vuelo, sin archivos externos) ---
+let diceAudioCtx = null;
+function getDiceAudioCtx(){
+  if(!diceAudioCtx){
+    try{ diceAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(err){ diceAudioCtx = null; }
+  }
+  if(diceAudioCtx && diceAudioCtx.state === "suspended") diceAudioCtx.resume().catch(() => {});
+  return diceAudioCtx;
+}
+function playDiceTickSound(){
+  const ctx = getDiceAudioCtx();
+  if(!ctx) return;
+  try{
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(150 + Math.random() * 70, t);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.18, t + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.06);
+  }catch(err){}
+}
+function playDiceLandSound(){
+  const ctx = getDiceAudioCtx();
+  if(!ctx) return;
+  try{
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(110, t);
+    osc.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.3, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.29);
+  }catch(err){}
+}
+
 function mod(score){ return Math.floor(((Number(score) || 10) - 10) / 2); }
 function fmtMod(m){ return (m >= 0 ? "+" : "") + m; }
 function profBonus(level){ const l = Math.max(1, Number(level) || 1); return Math.floor((l - 1) / 4) + 2; }
@@ -2206,10 +2251,12 @@ function runStoryPunishmentRoll(el){
   let ticks = 0;
   const timer = setInterval(() => {
     el.textContent = "tirando... (" + (1 + Math.floor(Math.random() * 20)) + ")";
+    playDiceTickSound();
     ticks++;
     if(ticks > 10){
       clearInterval(timer);
       const final = 1 + Math.floor(Math.random() * 20);
+      playDiceLandSound();
       const custom = (state.punishments[final - 1] || "").trim();
       el.innerHTML = "<strong>Castigo nº " + final + "</strong> — " +
         (custom ? escapeHtml(custom) : "(todavía no has escrito este castigo — ve a la pestaña Castigos para definirlo)");
@@ -2225,10 +2272,12 @@ function rollPunishment(){
   let ticks = 0;
   const timer = setInterval(() => {
     shapeNum.textContent = 1 + Math.floor(Math.random() * 20);
+    playDiceTickSound();
     ticks++;
     if(ticks > 14){
       clearInterval(timer);
       const final = 1 + Math.floor(Math.random() * 20);
+      playDiceLandSound();
       shapeNum.textContent = final;
       lastRolledPunishment = final - 1;
       label.textContent = "Castigo nº " + final;
@@ -3264,10 +3313,12 @@ document.getElementById("punishmentCancelBtn").addEventListener("click", () => {
     const maxTicks = 14;
     const interval = setInterval(() => {
       resultNum.textContent = fairRoll(sides);
+      playDiceTickSound();
       ticks++;
       if(ticks >= maxTicks){
         clearInterval(interval);
         const result = loaded ? loadedRoll(sides) : fairRoll(sides);
+        playDiceLandSound();
         resultNum.textContent = result;
         resultNum.classList.add("result");
         overlayLabel.textContent = "resultado d" + sides + " · toca el dado para tirar de nuevo";
