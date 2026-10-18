@@ -2272,13 +2272,25 @@ document.getElementById("bestiaryFilter").addEventListener("input", renderBestia
 
 // --- generador de criaturas con variación ---
 const GEN_PROFILES = [
-  { id:"joven",    w:25, beast:"Joven (alocado)",   hum:"Novato impulsivo",  hp:0.7,  ac:+1, hit:0,  dmg:-1, spd:+3,
-    noteB:"Nervioso y errático: ataca al objetivo más cercano, ventaja en iniciativa.", noteH:"Poca experiencia: ataca sin pensar y huye si caen 2 aliados." },
-  { id:"adulto",   w:35, beast:"Adulto",            hum:"Soldado normal",    hp:1,    ac:0,  hit:0,  dmg:0,  spd:0,  noteB:"", noteH:"" },
-  { id:"veterano", w:25, beast:"Veterano (cicatrices)", hum:"Curtido en mil peleas", hp:1.15, ac:0, hit:+1, dmg:+1, spd:0,
-    noteB:"Sabe lo que hace: busca al objetivo más herido.", noteH:"Táctico: busca flanquear y al más herido." },
-  { id:"viejo",    w:15, beast:"Viejo (rabioso)",   hum:"Viejo veterano",    hp:1.3,  ac:-1, hit:0,  dmg:+2, spd:-3,
-    noteB:"Lento, pero golpea con saña.", noteH:"Lento, pero pega durísimo." }
+  { id:"joven", w:25, beast:"Joven (alocado)", hum:"Novato inexperto", hp:0.7, ac:+1, hit:-2, dmg:-1, spd:+3, critMin:20, fumbleMax:2,
+    noteB:"Va a lo loco: ataca al más cercano sin pensar. Pifia con 1 o 2, pero es rápido y escurridizo.",
+    noteH:"Sin experiencia: golpea a lo loco y falla mucho (pifia con 1 o 2). Huye si caen dos aliados.",
+    lookB:["pelaje reluciente y ojos enormes","movimientos torpes pero veloces","no deja de moverse, nervioso","aún le sobran las patas"],
+    lookH:["cara de crío y barba rala","arma recién afilada que no sabe agarrar","le tiemblan las manos","armadura que le queda grande","mira a todos lados, asustado y fanfarrón"] },
+  { id:"adulto", w:35, beast:"Adulto", hum:"Soldado raso", hp:1, ac:0, hit:0, dmg:0, spd:0, critMin:20, fumbleMax:1,
+    noteB:"", noteH:"",
+    lookB:["en plena forma","pelaje cuidado, mirada fija","se mueve con seguridad"],
+    lookH:["aspecto corriente, equipo cuidado","sabe lo justo para sobrevivir","gesto cansado de quien hace esto cada día"] },
+  { id:"veterano", w:25, beast:"Veterano (cicatrices)", hum:"Curtido en mil peleas", hp:1.15, ac:0, hit:+1, dmg:+1, spd:0, critMin:19, fumbleMax:1,
+    noteB:"Sabe lo que hace: rodea, busca al más herido y no se deja engañar. Crítico con 19-20.",
+    noteH:"Táctico: busca flanquear, apunta al más herido y no cae en trucos simples. Crítico con 19-20.",
+    lookB:["cicatrices cruzando el lomo","una oreja desgarrada","mirada fría, calculadora"],
+    lookH:["cicatriz en la ceja y nariz rota","ojos que miden a cada enemigo","armadura remendada mil veces","sonrisa torcida de quien ha visto de todo"] },
+  { id:"viejo", w:15, beast:"Viejo (rabioso)", hum:"Viejo lobo mellado", hp:1.3, ac:-1, hit:+2, dmg:+2, spd:-3, critMin:19, fumbleMax:1,
+    noteB:"Lento, pero con una vida de combates: golpea donde duele y mide cada ataque. Crítico con 19-20.",
+    noteH:"Lento, pero con muchísima estrategia: no desperdicia un golpe y castiga cada error. Crítico con 19-20.",
+    lookB:["pelaje canoso y hocico lleno de cicatrices","colmillos rotos, ojos velados","cojea al arrancar, pero aguanta lo que no debería"],
+    lookH:["mellado, canoso y con callos en las manos","arma llena de muescas que conoce de memoria","le faltan dientes y le sobra rabia","olor a taberna vieja y a sangre seca"] }
 ];
 const GEN_QUIRKS_BEAST = [
   "Cojea de una pata (anótalo: −1,5 m de velocidad).",
@@ -2398,12 +2410,13 @@ function genBuild(base, profileId, idx){
   hit = (atk.fixed && !human ? 0 : prof + mod) + profile.hit;
   const quirks = [];
   const pNote = human ? profile.noteH : profile.noteB;
+  const look = genPick(human ? profile.lookH : profile.lookB);
   if(pNote) quirks.push(pNote);
   if(Math.random() < 0.55) quirks.push(genPick(human ? GEN_QUIRKS_HUM : GEN_QUIRKS_BEAST));
   return {
     idx, name: base.name, human, profileLabel: human ? profile.hum : profile.beast,
     hpMax: hp, hp, hpTxt, ac, speed: genSpeed(base.speed, profile.spd),
-    hit, atkName, dmgDice, dmgBonus, dmgType, gear, quirks, rolls: base.traits || "", result: ""
+    hit, atkName, dmgDice, dmgBonus, dmgType, gear, quirks, look, critMin: profile.critMin, fumbleMax: profile.fumbleMax, rolls: base.traits || "", result: ""
   };
 }
 function genFmtDmg(c){
@@ -2424,6 +2437,7 @@ function renderGen(){
       <span style="opacity:.6">(${escapeHtml(c.hpTxt)})</span>
       · Velocidad ${escapeHtml(c.speed)}</div>
     <div class="gen-stats">Ataque: <b>${escapeHtml(c.atkName)}</b> ${c.hit >= 0 ? "+" : ""}${c.hit} para impactar · daño <b>${genFmtDmg(c)}</b> ${escapeHtml(c.dmgType || "")}</div>
+    <div class="gen-quirk" style="opacity:1">${escapeHtml(c.look)}</div>
     ${c.gear ? `<div class="gen-gear">${escapeHtml(c.gear)}</div>` : ""}
     ${c.rolls ? `<div class="gen-gear" style="opacity:.75">${escapeHtml(c.rolls)}</div>` : ""}
     ${c.quirks.map(q => `<div class="gen-quirk">${escapeHtml(q)}</div>`).join("")}
@@ -2438,11 +2452,11 @@ function genAttack(i){
   const d = adv === "adv" ? Math.max(d1, d2) : adv === "dis" ? Math.min(d1, d2) : d1;
   const dieTxt = adv === "normal" ? `${d}` : `${d1}/${d2}→${d}`;
   const total = d + c.hit;
-  const crit = d === 20, fumble = d === 1;
+  const crit = d >= c.critMin, fumble = d <= c.fumbleMax;
   const hits = !fumble && (crit || total >= tac);
   if(typeof playDiceLandSound === "function"){ try{ playDiceLandSound(); }catch(e){} }
   let txt = `d20 ${dieTxt} ${c.hit >= 0 ? "+" : ""}${c.hit} = ${total} vs CA ${tac}: `;
-  if(!hits){ txt += fumble ? "pifia, falla" : "falla"; }
+  if(!hits){ txt += fumble ? "¡pifia! falla estrepitosamente" : "falla"; }
   else {
     let dmg;
     if(c.dmgDice[0] === 0){ dmg = Math.max(1, c.dmgBonus); }
