@@ -2272,21 +2272,21 @@ document.getElementById("bestiaryFilter").addEventListener("input", renderBestia
 
 // --- generador de criaturas con variación ---
 const GEN_PROFILES = [
-  { id:"joven", w:25, beast:"Joven (alocado)", hum:"Novato inexperto", hp:0.7, ac:+1, hit:-2, dmg:-1, spd:+3, critMin:20, fumbleMax:2,
+  { id:"joven", wstates:[{t:"mellada y sin filo",dmg:-1},{t:"oxidada y mal equilibrada",dmg:-1},{t:"de segunda mano, sin afilar",dmg:0}], w:25, beast:"Joven (alocado)", hum:"Novato inexperto", hp:1, ac:0, hit:-2, dmg:-1, spd:+3, critMin:20, fumbleMax:2,
     noteB:"Va a lo loco: ataca al más cercano sin pensar. Pifia con 1 o 2, pero es rápido y escurridizo.",
     noteH:"Sin experiencia: golpea a lo loco y falla mucho (pifia con 1 o 2). Huye si caen dos aliados.",
     lookB:["pelaje reluciente y ojos enormes","movimientos torpes pero veloces","no deja de moverse, nervioso","aún le sobran las patas"],
     lookH:["cara de crío y barba rala","arma recién afilada que no sabe agarrar","le tiemblan las manos","armadura que le queda grande","mira a todos lados, asustado y fanfarrón"] },
-  { id:"adulto", w:35, beast:"Adulto", hum:"Soldado raso", hp:1, ac:0, hit:0, dmg:0, spd:0, critMin:20, fumbleMax:1,
+  { id:"adulto", wstates:[{t:"en uso corriente",dmg:0}], w:35, beast:"Adulto", hum:"Soldado raso", hp:1, ac:0, hit:0, dmg:0, spd:0, critMin:20, fumbleMax:1,
     noteB:"", noteH:"",
     lookB:["en plena forma","pelaje cuidado, mirada fija","se mueve con seguridad"],
     lookH:["aspecto corriente, equipo cuidado","sabe lo justo para sobrevivir","gesto cansado de quien hace esto cada día"] },
-  { id:"veterano", w:25, beast:"Veterano (cicatrices)", hum:"Curtido en mil peleas", hp:1.15, ac:0, hit:+1, dmg:+1, spd:0, critMin:19, fumbleMax:1,
+  { id:"veterano", wstates:[{t:"bien cuidada y afilada",dmg:+1}], w:25, beast:"Veterano (cicatrices)", hum:"Curtido en mil peleas", hp:1, ac:0, hit:+1, dmg:+1, spd:0, critMin:19, fumbleMax:1,
     noteB:"Sabe lo que hace: rodea, busca al más herido y no se deja engañar. Crítico con 19-20.",
     noteH:"Táctico: busca flanquear, apunta al más herido y no cae en trucos simples. Crítico con 19-20.",
     lookB:["cicatrices cruzando el lomo","una oreja desgarrada","mirada fría, calculadora"],
     lookH:["cicatriz en la ceja y nariz rota","ojos que miden a cada enemigo","armadura remendada mil veces","sonrisa torcida de quien ha visto de todo"] },
-  { id:"viejo", w:15, beast:"Viejo (rabioso)", hum:"Viejo lobo mellado", hp:1.3, ac:-1, hit:+2, dmg:+2, spd:-3, critMin:19, fumbleMax:1,
+  { id:"viejo", wstates:[{t:"afilada como una navaja, cuidada al detalle",dmg:+1},{t:"vieja pero perfectamente equilibrada y afilada",dmg:+1}], w:15, beast:"Viejo (rabioso)", hum:"Viejo lobo mellado", hp:1, ac:0, hit:+2, dmg:+2, spd:-3, critMin:19, fumbleMax:1,
     noteB:"Lento, pero con una vida de combates: golpea donde duele y mide cada ataque. Crítico con 19-20.",
     noteH:"Lento, pero con muchísima estrategia: no desperdicia un golpe y castiga cada error. Crítico con 19-20.",
     lookB:["pelaje canoso y hocico lleno de cicatrices","colmillos rotos, ojos velados","cojea al arrancar, pero aguanta lo que no debería"],
@@ -2401,8 +2401,9 @@ function genBuild(base, profileId, idx){
     ac = Math.max(10, (parseInt(base.ac, 10) || 10) + arm.d + (shield ? 1 : 0) + profile.ac);
     const c = genRoll(1, 6).total;
     const pocket = Math.random() < 0.6 ? ` · Bolsillos: ${genRoll(2, 6).total} pc${Math.random() < 0.4 ? " y " + genRoll(1, 4).total + " ps" : ""}` : "";
-    gear = `Arma: ${weapon.name} (${weapon.n}d${weapon.s} ${weapon.type}${weapon.ranged ? ", a distancia" : ""}) · Armadura: ${arm.n}${shield ? " + escudo" : ""}${pocket}`;
-    atkName = weapon.name; dmgDice = [weapon.n, weapon.s]; dmgBonus = mod + profile.dmg; dmgType = weapon.type;
+    const wst = genPick(profile.wstates);
+    gear = `Arma: ${weapon.name} ${wst.t} (${weapon.n}d${weapon.s} ${weapon.type}${weapon.ranged ? ", a distancia" : ""}) · Armadura: ${arm.n}${shield ? " + escudo" : ""}${pocket}`;
+    atkName = weapon.name; dmgDice = [weapon.n, weapon.s]; dmgBonus = mod + wst.dmg; dmgType = weapon.type;
   } else {
     atkName = atk.name; dmgDice = atk.fixed ? [0, 0] : [atk.n, atk.s];
     dmgBonus = atk.fixed ? Math.max(1, atk.b + profile.dmg) : atk.b + profile.dmg; dmgType = atk.type;
