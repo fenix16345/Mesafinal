@@ -950,6 +950,12 @@
       </div>
       <button class="add-btn" id="ghSaveBtn" type="button">guardar en la nube (nuevo punto)</button>
       <p class="tension-result" id="ghSaveResult"></p>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:12px;"><input type="checkbox" id="ghAutoChk"> Sincronización automática (sube los cambios solo y carga lo último al abrir la página)</label>
+      <p class="tension-result" id="ghAutoStatus"></p>
+      <div id="ghConflictBtns" hidden style="display:none;gap:8px;flex-wrap:wrap;">
+        <button class="ctrl-btn" id="ghUseCloudBtn" type="button">usar la versión de la nube</button>
+        <button class="ctrl-btn" id="ghUseMineBtn" type="button">subir la mía (la de la nube queda como copia)</button>
+      </div>
       <p class="eyebrow" style="margin-top:16px;">puntos guardados en GitHub</p>
       <button class="ctrl-btn" id="ghRefreshBtn" type="button">actualizar lista</button>
       <div id="ghSaveList" style="margin-top:10px;"></div>
@@ -3326,15 +3332,29 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
 // página recuerda sola la partida en este ordenador/navegador. El botón de
 // "Guardar partida" sigue sirviendo para hacer una copia o pasarla a otro sitio.
 const AUTOSAVE_KEY = "mesaDeMandoAutosave_v1";
+let lastAutoStr = null;
+const GH_DIRTY_KEY = "mesaGhDirty_v1";
 function doAutosave(){
-  try{ localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state)); }catch(err){ /* almacenamiento lleno o bloqueado: no pasa nada grave */ }
+  try{
+    const str = JSON.stringify(state);
+    localStorage.setItem(AUTOSAVE_KEY, str);
+    if(lastAutoStr !== null && str !== lastAutoStr){ localStorage.setItem(GH_DIRTY_KEY, "1"); }
+    lastAutoStr = str;
+  }catch(err){ /* almacenamiento lleno o bloqueado: no pasa nada grave */ }
 }
 setInterval(doAutosave, 4000);
 window.addEventListener("beforeunload", doAutosave);
 document.addEventListener("visibilitychange", () => { if(document.visibilityState === "hidden") doAutosave(); });
 
-document.getElementById("newGameBtn").addEventListener("click", () => {
-  if(!confirm("Esto borra la partida guardada automáticamente en este navegador y empieza de cero. ¿Seguro? (si quieres conservarla, descárgala antes con \"Guardar partida\")")) return;
+document.getElementById("newGameBtn").addEventListener("click", async () => {
+  if(!confirm("Esto borra la partida guardada automáticamente en este navegador y empieza de cero. Si tienes la sincronización automática activada, también sustituye la partida viva de la nube (antes se guarda una copia con fecha). ¿Seguro? (si quieres conservarla, descárgala antes con \"Guardar partida\")")) return;
+  try{
+    if(typeof ghAutoOn === "function" && ghAutoOn()){
+      const { path, label } = ghTimestampName();
+      await ghPutFile(path, state, "Copia antes de empezar partida nueva: " + label);
+      localStorage.setItem(GH_DIRTY_KEY, "1");
+    }
+  }catch(err){}
   try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
   location.reload();
 });
@@ -3416,7 +3436,7 @@ async function ghRefreshSaveList(){
     if(res.status === 404){ listEl.innerHTML = "<p class=\"equip-empty\">Todavía no hay puntos guardados en la nube.</p>"; return; }
     if(!res.ok){ listEl.innerHTML = "<p class=\"equip-empty\">No se pudo leer la lista (revisa el token/repositorio).</p>"; return; }
     const files = await res.json();
-    const jsonFiles = (Array.isArray(files) ? files : []).filter(f => f.name.endsWith(".json")).sort((a, b) => b.name.localeCompare(a.name));
+    const jsonFiles = (Array.isArray(files) ? files : []).filter(f => f.name.endsWith(".json") && f.name !== "latest.json").sort((a, b) => b.name.localeCompare(a.name));
     if(!jsonFiles.length){ listEl.innerHTML = "<p class=\"equip-empty\">Todavía no hay puntos guardados en la nube.</p>"; return; }
     listEl.innerHTML = "";
     jsonFiles.forEach(f => {
@@ -3479,6 +3499,132 @@ async function ghDeleteFromCloud(path, sha){
     resultEl.textContent = "No se pudo conectar con GitHub.";
   }
 }
+
+// --- sincronización automática con GitHub ---
+// Mantiene saves/latest.json = "la partida viva". Cada dispositivo (con su token) sube
+// sus cambios solo y, al abrir la página, carga lo último si no tiene cambios propios
+// sin subir. Si hay cambios en los dos lados a la vez, avisa y deja elegir (no pisa nada).
+// Además guarda una copia con fecha como mucho cada 30 min.
+const GH_AUTO_KEY = "mesaGhAuto_v1", GH_REV_KEY = "mesaGhRev_v1", GH_BACKUP_KEY = "mesaGhBackupAt_v1";
+const GH_LATEST = "saves/latest.json";
+let ghSyncBusy = false, ghConflict = null, ghTick = 0, ghHadLocalAtLoad = false;
+function lsGet(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, String(v)); }catch(e){} }
+function ghAutoOn(){ return lsGet(GH_AUTO_KEY) === "1" && !!ghTokenInput().value.trim() && !!ghRepoInput().value.trim(); }
+function ghIsDirty(){ return lsGet(GH_DIRTY_KEY) === "1"; }
+function ghSetStatus(txt){ const el = document.getElementById("ghAutoStatus"); if(el) el.textContent = txt; }
+function ghClock(){ const d = new Date(); return ghPad(d.getHours()) + ":" + ghPad(d.getMinutes()); }
+function ghShowConflict(on){ const el = document.getElementById("ghConflictBtns"); if(el) el.style.display = on ? "flex" : "none"; }
+async function ghGetLatest(){
+  const { owner, repo } = ghRepoParts();
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${GH_LATEST}`, { headers: ghHeaders(), cache: "no-store" });
+  if(res.status === 404) return { missing: true };
+  if(!res.ok) throw new Error("get " + res.status);
+  const data = await res.json();
+  const obj = JSON.parse(base64ToUtf8(data.content.replace(/\n/g, "")));
+  return { sha: data.sha, rev: obj.rev, state: obj.state, raw: obj };
+}
+async function ghPutFile(path, obj, message, sha){
+  const { owner, repo } = ghRepoParts();
+  const body = { message, content: utf8ToBase64(JSON.stringify(obj)) };
+  if(sha) body.sha = sha;
+  return fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+    method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()), body: JSON.stringify(body)
+  });
+}
+function ghApplyCloud(cloud){
+  applyLoadedState(cloud.state);
+  try{ lastAutoStr = JSON.stringify(state); localStorage.setItem(AUTOSAVE_KEY, lastAutoStr); }catch(e){}
+  lsSet(GH_DIRTY_KEY, "0"); lsSet(GH_REV_KEY, cloud.rev);
+}
+async function ghPush(cloudSha){
+  doAutosave();
+  const rev = Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+  const res = await ghPutFile(GH_LATEST, { rev, syncedAt: new Date().toISOString(), state }, "Sincronización automática", cloudSha);
+  if(res.status === 409 || res.status === 422) return "conflict";
+  if(!res.ok) throw new Error("put " + res.status);
+  lsSet(GH_REV_KEY, rev); lsSet(GH_DIRTY_KEY, "0");
+  const last = parseInt(lsGet(GH_BACKUP_KEY), 10) || 0;
+  if(Date.now() - last > 30 * 60 * 1000){
+    const { path, label } = ghTimestampName();
+    const r2 = await ghPutFile(path, state, "Copia automática: " + label);
+    if(r2.ok) lsSet(GH_BACKUP_KEY, Date.now());
+  }
+  return "ok";
+}
+async function ghSyncOnce(force){
+  if(ghSyncBusy || !ghAutoOn() || ghConflict) return;
+  const typing = document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  ghSyncBusy = true;
+  try{
+    const dirty = ghIsDirty();
+    const lastRev = lsGet(GH_REV_KEY);
+    const cloud = await ghGetLatest();
+    if(cloud.missing){
+      ghSetStatus("Subiendo la partida por primera vez...");
+      const r = await ghPush();
+      ghSetStatus(r === "ok" ? "Sincronizado ✓ " + ghClock() : "Conflicto al subir; vuelve a intentarlo.");
+    } else if(cloud.rev === lastRev){
+      if(dirty){
+        ghSetStatus("Subiendo cambios...");
+        const r = await ghPush(cloud.sha);
+        if(r === "conflict"){ ghSetStatus("Otro dispositivo guardó a la vez. Reintentando en el siguiente ciclo."); }
+        else ghSetStatus("Sincronizado ✓ " + ghClock());
+      } else { ghSetStatus("Sincronizado ✓ " + ghClock()); }
+    } else {
+      const firstTimeWithLocal = !lastRev && ghHadLocalAtLoad;
+      if(!dirty && !firstTimeWithLocal){
+        if(typing && !force){ return; }
+        ghApplyCloud(cloud);
+        ghSetStatus("Cargada la última versión de la nube ✓ " + ghClock());
+      } else {
+        ghConflict = cloud;
+        ghShowConflict(true);
+        ghSetStatus("⚠ La nube tiene una versión distinta a la de este dispositivo. Elige cuál conservar.");
+      }
+    }
+  }catch(err){
+    ghSetStatus("Sin conexión con GitHub (se reintentará). Revisa token/repositorio si sigue así.");
+  }finally{ ghSyncBusy = false; }
+}
+async function ghResolveConflict(useCloud){
+  const cloud = ghConflict; if(!cloud) return;
+  ghSyncBusy = true;
+  try{
+    if(useCloud){
+      ghApplyCloud(cloud);
+      ghSetStatus("Cargada la versión de la nube ✓ " + ghClock());
+    } else {
+      const { label } = ghTimestampName();
+      await ghPutFile(`saves/copia-nube_${label.replace(/[: ]/g, "-")}.json`, cloud.state, "Copia de la nube antes de sustituirla");
+      const r = await ghPush(cloud.sha);
+      ghSetStatus(r === "ok" ? "Subida la versión de este dispositivo ✓ " + ghClock() : "No se pudo subir; reintenta.");
+    }
+    ghConflict = null; ghShowConflict(false);
+  }catch(err){ ghSetStatus("No se pudo resolver (conexión). Reintenta."); }
+  finally{ ghSyncBusy = false; }
+}
+function ghAutoInit(){
+  const chk = document.getElementById("ghAutoChk");
+  if(!chk) return;
+  chk.checked = lsGet(GH_AUTO_KEY) === "1";
+  chk.addEventListener("change", () => {
+    ghSaveSettings();
+    lsSet(GH_AUTO_KEY, chk.checked ? "1" : "0");
+    if(chk.checked){
+      if(!ghTokenInput().value.trim()){ ghSetStatus("Pon primero el token y vuelve a marcar la casilla."); chk.checked = false; lsSet(GH_AUTO_KEY, "0"); return; }
+      ghSetStatus("Conectando..."); ghSyncOnce(true);
+    } else ghSetStatus("Sincronización automática desactivada.");
+  });
+  ghTokenInput().addEventListener("change", ghSaveSettings);
+  ghRepoInput().addEventListener("change", ghSaveSettings);
+  document.getElementById("ghUseCloudBtn").addEventListener("click", () => ghResolveConflict(true));
+  document.getElementById("ghUseMineBtn").addEventListener("click", () => ghResolveConflict(false));
+  lastAutoStr = JSON.stringify(state);
+  if(ghAutoOn()){ ghSetStatus("Conectando..."); ghSyncOnce(true); }
+  setInterval(() => { ghTick++; if(ghIsDirty() || ghTick % 3 === 0) ghSyncOnce(false); }, 20000);
+  document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible") ghSyncOnce(false); });
+}
 document.getElementById("ghSaveBtn").addEventListener("click", ghSaveToCloud);
 document.getElementById("ghRefreshBtn").addEventListener("click", ghRefreshSaveList);
 ghLoadSettings();
@@ -3506,6 +3652,8 @@ if(autosaved){
   });
   renderNpcs();
 }
+ghHadLocalAtLoad = (autosaved !== null);
+ghAutoInit();
 
 renderPunishmentList();
 renderEquipCategoryFilters();
