@@ -239,7 +239,8 @@
   .equip-row:last-child{ border-bottom:none; }
   .equip-name{ color: var(--ink); flex-shrink:0; }
   .equip-detail{ color: var(--ink-dim); font-size:12px; flex:1; text-align:left; margin-left: 10px; }
-  .equip-price{ font-family:'Space Grotesk', sans-serif; color: var(--torch); white-space:nowrap; flex-shrink:0; }
+  .equip-price{ font-family:'Space Grotesk', sans-serif; color: var(--torch); white-space:nowrap; flex-shrink:0; text-align:right; }
+  .equip-sell{ display:block; font-size:11px; opacity:.6; }
   .equip-empty{ font-size:13px; color: var(--ink-dim); font-style: italic; }
   .equip-currency-note{ font-size:12px; color: var(--ink-dim); background: var(--stone-2);
     border:1px solid var(--border); border-radius:4px; padding:9px 12px; margin:0 0 16px; line-height:1.6; }
@@ -1242,11 +1243,11 @@ const equipmentData = [
   { cat: "Equipo de aventurero", name: "Ropa de viaje", price: "2 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Saquito de componentes", price: "25 po", detail: "foco arcano" },
   { cat: "Equipo de aventurero", name: "Palanca", price: "2 po", detail: "" },
-  { cat: "Equipo de aventurero", name: "Cristal", price: "10 po", detail: "foco arcano" },
+  { cat: "Focos de lanzamiento", name: "Cristal", price: "10 po", detail: "foco arcano" },
   { cat: "Equipo de aventurero", name: "Hatillo de diplomático (pack)", price: "39 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Kit de disfraz", price: "25 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Hatillo de mazmorrero (pack)", price: "12 po", detail: "" },
-  { cat: "Equipo de aventurero", name: "Símbolo sagrado (emblema)", price: "5 po", detail: "" },
+  { cat: "Focos de lanzamiento", name: "Símbolo sagrado (emblema)", price: "5 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Hatillo de artista (pack)", price: "40 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Hatillo de explorador (pack)", price: "10 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Aparejos de pesca", price: "1 po", detail: "" },
@@ -1299,14 +1300,14 @@ const equipmentData = [
   { cat: "Equipo de aventurero", name: "Libro de conjuros", price: "50 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Estaca de hierro", price: "1 ps", detail: "" },
   { cat: "Equipo de aventurero", name: "Catalejo", price: "1000 po", detail: "" },
-  { cat: "Equipo de aventurero", name: "Bastón druídico", price: "5 po", detail: "foco" },
+  { cat: "Focos de lanzamiento", name: "Bastón druídico", price: "5 po", detail: "foco" },
   { cat: "Equipo de aventurero", name: "Cuerda fina (3 m)", price: "1 pc", detail: "" },
   { cat: "Equipo de aventurero", name: "Tienda (2 personas)", price: "2 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Yesquero", price: "5 ps", detail: "" },
   { cat: "Equipo de aventurero", name: "Antorcha", price: "1 pc", detail: "" },
   { cat: "Equipo de aventurero", name: "Totem", price: "1 po", detail: "foco sagrado" },
   { cat: "Equipo de aventurero", name: "Vial (vacío)", price: "1 po", detail: "" },
-  { cat: "Equipo de aventurero", name: "Varita", price: "10 po", detail: "foco arcano" },
+  { cat: "Focos de lanzamiento", name: "Varita", price: "10 po", detail: "foco arcano" },
   { cat: "Equipo de aventurero", name: "Odre", price: "2 po", detail: "" },
   { cat: "Equipo de aventurero", name: "Piedra de afilar", price: "1 pc", detail: "" },
   // Herramientas
@@ -1364,7 +1365,77 @@ const equipmentData = [
   { cat: "Monturas y vehículos", name: "Barco de vela", price: "10000 po", detail: "" },
   { cat: "Monturas y vehículos", name: "Galera de guerra", price: "25000 po", detail: "" },
   { cat: "Monturas y vehículos", name: "Barcaza", price: "3000 po", detail: "" },
-  { cat: "Monturas y vehículos", name: "Drakar (longship)", price: "10000 po", detail: "" }
+  { cat: "Monturas y vehículos", name: "Drakar (longship)", price: "10000 po", detail: "" },
+  { cat: "Focos de lanzamiento", name: "Orbe", price: "20 po", detail: "foco arcano · 3 lb · hechicero, brujo, mago" },
+  { cat: "Focos de lanzamiento", name: "Varilla", price: "10 po", detail: "foco arcano · 2 lb · hechicero, brujo, mago" },
+  { cat: "Focos de lanzamiento", name: "Bastón arcano", price: "5 po", detail: "foco arcano · 4 lb · también sirve como arma (1d6) · hechicero, brujo, mago" },
+  { cat: "Focos de lanzamiento", name: "Ramita de muérdago", price: "1 po", detail: "foco druídico · druida, guardabosques" },
+  { cat: "Focos de lanzamiento", name: "Tótem", price: "1 po", detail: "foco druídico · druida, guardabosques" },
+  { cat: "Focos de lanzamiento", name: "Vara de tejo", price: "10 po", detail: "foco druídico · 1 lb · druida, guardabosques" },
+  { cat: "Focos de lanzamiento", name: "Amuleto (símbolo sagrado)", price: "5 po", detail: "foco divino · 1 lb · clérigo, paladín" },
+  { cat: "Focos de lanzamiento", name: "Relicario (símbolo sagrado)", price: "5 po", detail: "foco divino · 2 lb · clérigo, paladín" },
+  { cat: "Focos de lanzamiento", name: "Bolsa de componentes", price: "25 po", detail: "sustituye los componentes materiales sin coste · todos los lanzadores" },
+  { cat: "Mágico · armas y armaduras", name: "Arma +1 (cualquiera)", price: "101–500 po", detail: "poco común · +1 a impactar y al daño · ideal: Guerrero, Paladín, Pícaro" },
+  { cat: "Mágico · armas y armaduras", name: "Arma +2 (cualquiera)", price: "501–5.000 po", detail: "raro · +2 a impactar y al daño" },
+  { cat: "Mágico · armas y armaduras", name: "Arma +3 (cualquiera)", price: "5.001–50.000 po", detail: "muy raro · +3 a impactar y al daño" },
+  { cat: "Mágico · armas y armaduras", name: "Jabalina de relámpagos", price: "101–500 po", detail: "poco común · al lanzarla se convierte en un rayo de 4d6 (1 vez al día) · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · armas y armaduras", name: "Arma de aviso", price: "101–500 po", detail: "poco común · ventaja en iniciativa y no puedes ser sorprendido · sintonía · ideal: Pícaro, Guerrero" },
+  { cat: "Mágico · armas y armaduras", name: "Daga venenosa", price: "501–5.000 po", detail: "raro · +1 · una vez al día envenena el filo (3d10 veneno) · ideal: Pícaro" },
+  { cat: "Mágico · armas y armaduras", name: "Lengua de fuego (espada)", price: "501–5.000 po", detail: "raro · al activarla suma 2d6 de fuego a cada golpe · sintonía · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · armas y armaduras", name: "Hoja solar", price: "501–5.000 po", detail: "raro · espada de luz solar (1d8 radiante, finura) · sintonía · ideal: Paladín" },
+  { cat: "Mágico · armas y armaduras", name: "Espada de vida robada", price: "501–5.000 po", detail: "raro · al impactar con crítico drena 10 PV temporales · sintonía" },
+  { cat: "Mágico · armas y armaduras", name: "Armadura +1 (cualquiera)", price: "501–5.000 po", detail: "raro · +1 CA · ideal: Guerrero, Paladín, Pícaro" },
+  { cat: "Mágico · armas y armaduras", name: "Armadura +2 (cualquiera)", price: "5.001–50.000 po", detail: "muy raro · +2 CA" },
+  { cat: "Mágico · armas y armaduras", name: "Armadura +3 (cualquiera)", price: "más de 50.000 po", detail: "legendario · +3 CA" },
+  { cat: "Mágico · armas y armaduras", name: "Escudo +1", price: "101–500 po", detail: "poco común · +1 CA además del escudo · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · armas y armaduras", name: "Escudo +2", price: "501–5.000 po", detail: "raro · +2 CA además del escudo" },
+  { cat: "Mágico · armas y armaduras", name: "Armadura de mithril", price: "101–500 po", detail: "poco común · cota de malla/escamas/placas ligera; sin desventaja a Sigilo ni requisito de Fuerza" },
+  { cat: "Mágico · armas y armaduras", name: "Armadura de adamantina", price: "101–500 po", detail: "poco común · los críticos contra ti son golpes normales" },
+  { cat: "Mágico · objetos maravillosos", name: "Bolsa de contención", price: "101–500 po", detail: "poco común · cabe mucho más de lo que parece (~250 kg) · ideal: todos" },
+  { cat: "Mágico · objetos maravillosos", name: "Botas élficas", price: "101–500 po", detail: "poco común · ventaja en Sigilo por silencio · ideal: Pícaro" },
+  { cat: "Mágico · objetos maravillosos", name: "Capa élfica", price: "101–500 po", detail: "poco común · ventaja en Sigilo y desventaja a percibirte · sintonía · ideal: Pícaro" },
+  { cat: "Mágico · objetos maravillosos", name: "Capa de protección", price: "101–500 po", detail: "poco común · +1 CA y salvaciones · sintonía · ideal: todos" },
+  { cat: "Mágico · objetos maravillosos", name: "Anillo de protección", price: "501–5.000 po", detail: "raro · +1 CA y salvaciones · sintonía · ideal: todos" },
+  { cat: "Mágico · objetos maravillosos", name: "Amuleto de salud", price: "501–5.000 po", detail: "raro · tu Constitución pasa a 19 · sintonía · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · objetos maravillosos", name: "Guanteletes de poder de ogro", price: "101–500 po", detail: "poco común · tu Fuerza pasa a 19 · sintonía · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · objetos maravillosos", name: "Cinturón de fuerza de gigante (colinas)", price: "501–5.000 po", detail: "raro · tu Fuerza pasa a 21 · sintonía · ideal: Guerrero, Paladín" },
+  { cat: "Mágico · objetos maravillosos", name: "Guantes de latrocinio", price: "101–500 po", detail: "poco común · +5 a Juego de manos y a abrir cerraduras · ideal: Pícaro" },
+  { cat: "Mágico · objetos maravillosos", name: "Sombrero de disfraz", price: "101–500 po", detail: "poco común · lanza disfrazarse a voluntad · sintonía · ideal: Pícaro, Brujo" },
+  { cat: "Mágico · objetos maravillosos", name: "Gafas de visión nocturna", price: "101–500 po", detail: "poco común · visión en la oscuridad hasta 18 m · ideal: Pícaro" },
+  { cat: "Mágico · objetos maravillosos", name: "Cuerda de escalada", price: "101–500 po", detail: "poco común · 18 m de cuerda que obedece tus órdenes · ideal: Pícaro" },
+  { cat: "Mágico · objetos maravillosos", name: "Brazales de defensa", price: "501–5.000 po", detail: "raro · +2 CA si no llevas armadura ni escudo · sintonía · ideal: Pícaro, Brujo" },
+  { cat: "Mágico · objetos maravillosos", name: "Botas de velocidad", price: "501–5.000 po", detail: "raro · velocidad doble durante 10 minutos al día · sintonía" },
+  { cat: "Mágico · objetos maravillosos", name: "Diadema de intelecto", price: "101–500 po", detail: "poco común · tu Inteligencia pasa a 19 · sintonía" },
+  { cat: "Mágico · objetos maravillosos", name: "Piedra de la suerte", price: "101–500 po", detail: "poco común · +1 a pruebas de característica y salvaciones · sintonía · ideal: todos" },
+  { cat: "Mágico · objetos maravillosos", name: "Amuleto contra detección y localización", price: "101–500 po", detail: "poco común · sintonía · te protege de adivinación y de sensores mágicos" },
+  { cat: "Mágico · objetos maravillosos", name: "Escoba voladora", price: "101–500 po", detail: "poco común · vuelo 15 m" },
+  { cat: "Mágico · objetos maravillosos", name: "Bolsa de trucos", price: "101–500 po", detail: "poco común · saca animales al azar de ella" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita de detección de magia", price: "101–500 po", detail: "poco común · detecta magia a voluntad con cargas · ideal: Brujo" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita de proyectiles mágicos", price: "101–500 po", detail: "poco común · 7 cargas, lanza proyectiles mágicos · ideal: Brujo" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita del mago de guerra +1", price: "101–500 po", detail: "poco común · +1 a ataques de conjuro · sintonía (lanzador) · ideal: Brujo" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita del mago de guerra +2", price: "501–5.000 po", detail: "raro · +2 a ataques de conjuro · sintonía (lanzador)" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita de secretos", price: "101–500 po", detail: "poco común · detecta puertas y trampas ocultas cercanas" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita de parálisis", price: "501–5.000 po", detail: "raro · rayo que paraliza · sintonía (lanzador)" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Varita de bolas de fuego", price: "501–5.000 po", detail: "raro · lanza bola de fuego con cargas · sintonía (lanzador)" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Vara del guardián del pacto +1", price: "101–500 po", detail: "poco común · +1 a ataques y CD de conjuros, recupera un espacio al día · sintonía (brujo) · ideal: Brujo" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Vara del guardián del pacto +2", price: "501–5.000 po", detail: "raro · +2 a ataques y CD de conjuros · sintonía (brujo)" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Bastón de curación", price: "501–5.000 po", detail: "raro · cargas para curar y lanzar conjuros de sanación · sintonía (bardo/clérigo/druida)" },
+  { cat: "Mágico · varitas, varas y bastones", name: "Bastón de golpes", price: "501–5.000 po", detail: "raro · +3 a impactar con cargas para daño extra · sintonía" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de curación mayor", price: "~150 po", detail: "poco común · cura 4d4+4 PV" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de curación superior", price: "~500 po", detail: "raro · cura 8d4+8 PV" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de curación suprema", price: "~5.000 po", detail: "muy raro · cura 10d4+20 PV" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de trepar", price: "50–100 po", detail: "común · velocidad de trepar igual a la de caminar durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de respiración acuática", price: "101–500 po", detail: "poco común · respiras bajo el agua durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de resistencia", price: "101–500 po", detail: "poco común · resistencia a un tipo de daño durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de fuerza de gigante de las colinas", price: "101–500 po", detail: "poco común · Fuerza 21 durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de aliento de fuego", price: "101–500 po", detail: "poco común · exhalas fuego (4d6) hasta 3 veces en 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de heroísmo", price: "501–5.000 po", detail: "raro · 10 PV temporales y bendición durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de velocidad", price: "5.001–50.000 po", detail: "muy raro · acelerado durante 1 minuto" },
+  { cat: "Mágico · pociones y pergaminos", name: "Poción de invisibilidad", price: "5.001–50.000 po", detail: "muy raro · invisible durante 1 hora" },
+  { cat: "Mágico · pociones y pergaminos", name: "Pergamino de conjuro (truco o nivel 1)", price: "50–100 po", detail: "común · un solo uso · lo lee quien tenga ese conjuro en su lista" },
+  { cat: "Mágico · pociones y pergaminos", name: "Pergamino de conjuro (nivel 2–3)", price: "101–500 po", detail: "poco común · un solo uso" },
+  { cat: "Mágico · pociones y pergaminos", name: "Pergamino de conjuro (nivel 4–5)", price: "501–5.000 po", detail: "raro · un solo uso" },
+  { cat: "Mágico · pociones y pergaminos", name: "Pergamino de conjuro (nivel 6)", price: "5.001–50.000 po", detail: "muy raro · un solo uso" },
 ];
 
 // --- bestiario de referencia (criaturas habituales, valores estándar D&D 5ª edición) ---
@@ -2205,6 +2276,17 @@ function renderEquipCategoryFilters(){
     wrap.appendChild(btn);
   });
 }
+// precio de venta normal (PHB 5e): la mitad del precio de compra; no se aplica a objetos mágicos
+function equipSellPrice(it){
+  if(/^Mágico/.test(it.cat)) return "";
+  const m = /^(\d+(?:[.,]\d+)?)\s*(pp|po|pe|ps|pc)\s*$/.exec(it.price.trim());
+  if(!m) return "";
+  const mult = { pp:1000, po:100, pe:50, ps:10, pc:1 };
+  const half = parseFloat(m[1].replace(",", ".")) * mult[m[2]] / 2;
+  if(half >= 100) return (Math.round(half) / 100).toString().replace(".", ",") + " po";
+  if(half >= 10) return (Math.round(half) / 10).toString().replace(".", ",") + " ps";
+  return (Math.round(half * 10) / 10).toString().replace(".", ",") + " pc";
+}
 function renderEquipment(){
   const wrap = document.getElementById("equipList");
   const q = (document.getElementById("equipFilter").value || "").trim().toLowerCase();
@@ -2223,7 +2305,8 @@ function renderEquipment(){
       html += `<p class="equip-group-title">${escapeHtml(it.cat)}</p>`;
       lastCat = it.cat;
     }
-    html += `<div class="equip-row"><span class="equip-name">${escapeHtml(it.name)}</span><span class="equip-detail">${escapeHtml(it.detail)}</span><span class="equip-price">${escapeHtml(it.price)}</span></div>`;
+    const sell = equipSellPrice(it);
+    html += `<div class="equip-row"><span class="equip-name">${escapeHtml(it.name)}</span><span class="equip-detail">${escapeHtml(it.detail)}</span><span class="equip-price">${escapeHtml(it.price)}${sell ? `<span class="equip-sell">vende ≈ ${escapeHtml(sell)}</span>` : ""}</span></div>`;
   });
   wrap.innerHTML = html;
 }
