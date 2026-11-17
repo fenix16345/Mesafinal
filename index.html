@@ -4073,9 +4073,10 @@ document.getElementById("tensionHideBtn").addEventListener("click", () => {
   setTensionHidden(true);
 });
 document.getElementById("tensionShowBtn").addEventListener("click", () => setTensionHidden(false));
+// por defecto oculto (el capítulo de las ratas y el guardia ya terminó); el botón "mostrar" lo recupera
 try{
-  if(localStorage.getItem(TENSION_HIDDEN_KEY) === "1") setTensionHidden(true);
-}catch(err){}
+  if(localStorage.getItem(TENSION_HIDDEN_KEY) !== "0") setTensionHidden(true);
+}catch(err){ setTensionHidden(true); }
 
 // --- llamar al guardia (50% pasa de vosotros / 50% viene: 25% feliz, 75% cabreado) ---
 document.getElementById("tensionCallGuardBtn").addEventListener("click", () => {
